@@ -1,0 +1,20 @@
+applications:
+- name: cloudfoundry-sumologic-nozzle
+env:
+  API_ENDPOINT: https://api.some_api
+  SUMO_ENDPOINT: https://some_endpoint
+  FIREHOSE_SUBSCRIPTION_ID: cloudfoundry-sumologic-nozzle
+  CLOUDFOUNDRY_USER: firehose_user_authorized
+  CLOUDFOUNDRY_PASSWORD: password_firehose_user_authorized
+  EVENTS: LogMessage,ValueMetric,Error,ContainerMetric
+  SKIP_SSL_VALIDATION: false
+  NOZZLE_POLLING_PERIOD: 15s
+  LOG_EVENTS_BATCHSIZE: 200
+  SUMO_POST_MINIMUM_DELAY: 200ms
+  SUMO_CATEGORY: ExampleCategory
+  SUMO_NAME: ExampleName
+  SUMO_HOST: 123.123.123.0
+  VERBOSE_LOG_MESSAGES: false
+  CUSTOM_METADATA: customData1:customValue1,CustomData2:CustomValue2
+  INCLUDE_ONLY_MATCHING_FILTER: ""
+  EXCLUDE_ALWAYS_MATCHING_FILTER: ""

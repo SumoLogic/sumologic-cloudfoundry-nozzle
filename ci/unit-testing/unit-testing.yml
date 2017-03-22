@@ -1,0 +1,14 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: getourneau/alpine-golang-bash
+
+inputs:
+  - name: firehouse-to-sumologic-ci
+    path: gopath/src/github.com/mcplusa/cloudfoundry-sumologic-nozzle/
+
+run:
+  path: gopath/src/github.com/mcplusa/cloudfoundry-sumologic-nozzle/ci/unit-testing/unit-testing

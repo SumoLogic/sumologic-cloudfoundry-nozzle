@@ -1,0 +1,21 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: getourneau/alpine-golang-bash
+
+
+inputs:
+  - name: cloudfoundry-sumologic-nozzle-ci
+    path: gopath/src/github.com/mcplusa/cloudfoundry-sumologic-nozzle/
+  - name: version
+
+outputs:
+  - name: cloudfoundry-sumologic-nozzle-ci-build
+
+run:
+  path: gopath/src/github.com/mcplusa/cloudfoundry-sumologic-nozzle/ci/build-all/build-all
+params:
+  VERSION_APP:

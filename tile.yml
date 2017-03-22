@@ -1,0 +1,128 @@
+---
+# The high-level description of your tile.
+# Replace these properties with real values.
+#
+name: sumo-logic-nozzle # By convention lowercase with dashes
+icon_file: resources/sumo_128x128-B.png
+label: Sumo Logic Nozzle for PCF
+description: Forward firehose logs to Sumo Logic
+
+# Global defaults (all optional)
+#
+# org: test-org                         # Name of org to create for your apps
+# space: test-space                     # Name of space to create for your apps
+org_quota: 4096                       # Optional, memory quota in mb
+
+stemcell_criteria:
+  os: ubuntu-trusty
+  requires_cpi: false
+  version: '3263'
+
+properties:
+- name: author
+  type: string
+  label: Author
+  value: mcplusa.com
+
+
+packages:
+- name: sumo-logic-nozzle
+  type: app
+  manifest:
+    # any options that you would normally specify in a cf manifest.yml, including</i>
+    buildpack: https://github.com/cloudfoundry/go-buildpack.git
+    command: cloudfoundry-sumologic-nozzle
+    instances: 2
+    path: sumo-logic-nozzle.zip
+  health_check: none
+  needs_cf_credentials: true
+
+
+forms:
+- name: sumo-logic-config
+  label: Sumo Logic Settings
+  description: Sumo Logic Settings details
+  properties:
+  - name: sumo-endpoint
+    type: string
+    label: Sumo Logic Endpoint
+    description: Complete URL for the endpoint, copied from the Sumo Logic HTTP Source configuration
+  - name: sumo-post-minimum-delay
+    type: string
+    label: Sumo Logic Post Minimum Delay
+    description: Minimum time between HTTP POST to Sumo Logic
+    default: 2000ms
+  - name: sumo-category
+    type: string
+    label: Sumo Logic Category
+    description: This value overrides the default 'Source Category' associated with the configured Sumo Logic HTTP Source
+    optional: true
+  - name: sumo-name
+    type: string
+    label: Sumo Logic Name
+    description: This value overrides the default 'Source Name' associated with the configured Sumo Logic HTTP Source
+    optional: true
+  - name: sumo-host
+    type: string
+    label: Sumo Logic Host
+    description: This value overrides the default 'Source Host' associated with the configured Sumo Logic HTTP Source
+    optional: true
+  - name: custom-metadata
+    type: string
+    label: Custom Metadata
+    description: Use this field for addingCustom Metadata to the JSON (key1:value1,key2:value2, etc...)
+    optional: true
+  - name: include-only-matching-filter
+    type: string
+    label: Include Only Matching Filter
+    description: Adds an 'Include only' filter to Events content (key1:value1,key2:value2, etc...)
+    optional: true
+  - name: exclude-always-matching-filter
+    type: string
+    label: Exclude Always Filter
+    description: Adds an 'Exclude always' filter to Events content (key1:value1,key2:value2, etc...)
+    optional: true
+
+
+
+- name: cf-config
+  label: Cloud Foundry Settings
+  description: Cloud Foundry Settings details
+  properties:
+  - name: api-endpoint
+    type: string
+    label: Cloud Foundry API Endpoint
+    description: URL to CF API Endpoint
+  - name: cloudfoundry-user
+    type: string
+    label: Cloud Foundry User
+    description: Nozzle user
+  - name: cloudfoundry-password
+    type: secret
+    label: Cloud Foundry Password
+    description: Password for API user
+  - name: log-events-batch-size
+    type: string
+    label: Log Events Batch Size
+    description: When number of messages in the buffer is equal to this field, send those to Sumo Logic
+    default: 500
+  - name: events
+    type: string
+    label: Comma separated list of events you would like (Default is "LogMessage")
+    default: LogMessage
+    description: Valid options are Error,ContainerMetric,HttpStart,HttpStop,HttpStartStop,LogMessage,ValueMetric,CounterEvent
+  - name: skip-ssl-validation
+    type: boolean
+    label: Skip SSL validation
+    default: false
+    description: Skip SSL validation (to allow things like self-signed certs). Do not set to true in production
+  - name: verbose-log-messages
+    type: boolean
+    label: Verbose in 'LogMessage' event
+    default: true
+    description: Enable Verbose in 'LogMessage' Event. If is not checked, the 'LogMessage' will contain ONLY the fields 'tiemstamp', 'cf_app_guid', 'Msg'
+  - name: nozzle-polling-period
+    type: string
+    label: Nozzle Polling Period
+    default: 15s
+    description: How frequently this Nozzle polls the CF Firehose for data
