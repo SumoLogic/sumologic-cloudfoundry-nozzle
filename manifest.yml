@@ -9,7 +9,7 @@ env:
   EVENTS: LogMessage,ValueMetric,Error,ContainerMetric
   SKIP_SSL_VALIDATION: false
   NOZZLE_POLLING_PERIOD: 15s
-  LOG_EVENTS_BATCHSIZE: 200
+  LOG_EVENTS_BATCH_SIZE: 200
   SUMO_POST_MINIMUM_DELAY: 200ms
   SUMO_CATEGORY: ExampleCategory
   SUMO_NAME: ExampleName
