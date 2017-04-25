@@ -7,13 +7,13 @@ import (
 	"time"
 
 	"github.com/cloudfoundry-community/go-cfclient"
-	"github.com/mcplusa/cloudfoundry-sumologic-nozzle/caching"
-	"github.com/mcplusa/cloudfoundry-sumologic-nozzle/eventQueue"
-	"github.com/mcplusa/cloudfoundry-sumologic-nozzle/eventRouting"
-	"github.com/mcplusa/cloudfoundry-sumologic-nozzle/events"
-	"github.com/mcplusa/cloudfoundry-sumologic-nozzle/firehoseclient"
-	"github.com/mcplusa/cloudfoundry-sumologic-nozzle/logging"
-	"github.com/mcplusa/cloudfoundry-sumologic-nozzle/sumoCFFirehose"
+	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/caching"
+	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/eventQueue"
+	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/eventRouting"
+	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/events"
+	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/firehoseclient"
+	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/logging"
+	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/sumoCFFirehose"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 

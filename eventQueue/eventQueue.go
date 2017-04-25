@@ -1,6 +1,6 @@
 package eventQueue
 
-import . "github.com/mcplusa/cloudfoundry-sumologic-nozzle/events"
+import . "github.com/SumoLogic/sumologic-cloudfoundry-nozzle/events"
 
 // Queue is a basic FIFO queue based on a circular list that resizes as needed.
 type Queue struct {
