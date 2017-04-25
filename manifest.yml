@@ -1,5 +1,7 @@
 applications:
 - name: cloudfoundry-sumologic-nozzle
+  health-check-type: process
+  no-route: true
 env:
   API_ENDPOINT: https://api.some_api
   SUMO_ENDPOINT: https://some_endpoint
