@@ -7,13 +7,13 @@ import (
 	"time"
 
 	"github.com/cloudfoundry-community/go-cfclient"
-	"github.com/mcplusa/cloudfoundry-sumologic-nozzle/caching"
-	"github.com/mcplusa/cloudfoundry-sumologic-nozzle/eventQueue"
-	"github.com/mcplusa/cloudfoundry-sumologic-nozzle/eventRouting"
-	"github.com/mcplusa/cloudfoundry-sumologic-nozzle/events"
-	"github.com/mcplusa/cloudfoundry-sumologic-nozzle/firehoseclient"
-	"github.com/mcplusa/cloudfoundry-sumologic-nozzle/logging"
-	"github.com/mcplusa/cloudfoundry-sumologic-nozzle/sumoCFFirehose"
+	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/caching"
+	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/eventQueue"
+	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/eventRouting"
+	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/events"
+	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/firehoseclient"
+	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/logging"
+	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/sumoCFFirehose"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
@@ -23,7 +23,7 @@ var (
 	subscriptionId              = kingpin.Flag("subscription-id", "Cloud Foundry ID for the subscription.").Default("firehose").OverrideDefaultFromEnvar("FIREHOSE_SUBSCRIPTION_ID").String()
 	user                        = kingpin.Flag("cloudfoundry-user", "Cloud Foundry User").OverrideDefaultFromEnvar("CLOUDFOUNDRY_USER").String() //user created in CF, authorized to connect the firehose
 	password                    = kingpin.Flag("cloudfoundry-password", "Cloud Foundry Password").OverrideDefaultFromEnvar("CLOUDFOUNDRY_PASSWORD").String()
-	keepAlive, errK             = time.ParseDuration("25s") //default Error,ContainerMetric,HttpStart,HttpStop,HttpStartStop,LogMessage,ValueMetric,CounterEvent
+	keepAlive		            = time.ParseDuration("25s") //default Error,ContainerMetric,HttpStart,HttpStop,HttpStartStop,LogMessage,ValueMetric,CounterEvent
 	wantedEvents                = kingpin.Flag("events", fmt.Sprintf("Comma separated list of events you would like. Valid options are %s", eventRouting.GetListAuthorizedEventEvents())).Default("LogMessage").OverrideDefaultFromEnvar("EVENTS").String()
 	boltDatabasePath            = "event.db"
 	skipSSLValidation           = kingpin.Flag("skip-ssl-validation", "Skip SSL validation (to allow things like self-signed certs). Do not set to true in production").Default("false").OverrideDefaultFromEnvar("SKIP_SSL_VALIDATION").Bool()
