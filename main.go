@@ -23,7 +23,7 @@ var (
 	subscriptionId              = kingpin.Flag("subscription-id", "Cloud Foundry ID for the subscription.").Default("firehose").Envar("FIREHOSE_SUBSCRIPTION_ID").String()
 	user                        = kingpin.Flag("cloudfoundry-user", "Cloud Foundry User").Envar("CLOUDFOUNDRY_USER").String() //user created in CF, authorized to connect the firehose
 	password                    = kingpin.Flag("cloudfoundry-password", "Cloud Foundry Password").Envar("CLOUDFOUNDRY_PASSWORD").String()
-	keepAlive		            = time.ParseDuration("25s") //default Error,ContainerMetric,HttpStart,HttpStop,HttpStartStop,LogMessage,ValueMetric,CounterEvent
+	keepAlive, errDt		    = time.ParseDuration("25s") //default Error,ContainerMetric,HttpStart,HttpStop,HttpStartStop,LogMessage,ValueMetric,CounterEvent
 	wantedEvents                = kingpin.Flag("events", fmt.Sprintf("Comma separated list of events you would like. Valid options are %s", eventRouting.GetListAuthorizedEventEvents())).Default("LogMessage").Envar("EVENTS").String()
 	boltDatabasePath            = "event.db"
 	skipSSLValidation           = kingpin.Flag("skip-ssl-validation", "Skip SSL validation (to allow things like self-signed certs). Do not set to true in production").Default("false").Envar("SKIP_SSL_VALIDATION").Bool()
@@ -71,6 +71,10 @@ func main() {
 	}
 	logging.Info.Printf("Verbose Log Messages: %v\n", *verboseLogMessages)
 	logging.Info.Println("Starting Sumo Logic Nozzle " + version)
+
+	if errDt != nil {
+		logging.Info.Println("Could not parse Duration...")
+	}
 
 	c := cfclient.Config{
 		ApiAddress:        *apiEndpoint,
