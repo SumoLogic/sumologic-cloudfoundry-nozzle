@@ -6,9 +6,9 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/mcplusa/cloudfoundry-sumologic-nozzle/caching"
-	"github.com/mcplusa/cloudfoundry-sumologic-nozzle/eventQueue"
-	fevents "github.com/mcplusa/cloudfoundry-sumologic-nozzle/events"
+	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/caching"
+	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/eventQueue"
+	fevents "github.com/SumoLogic/sumologic-cloudfoundry-nozzle/events"
 	"github.com/cloudfoundry/sonde-go/events"
 )
 

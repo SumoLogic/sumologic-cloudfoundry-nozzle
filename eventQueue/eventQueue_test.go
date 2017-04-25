@@ -3,7 +3,7 @@ package eventQueue
 import (
 	"testing"
 
-	. "github.com/mcplusa/cloudfoundry-sumologic-nozzle/events"
+	. "github.com/SumoLogic/sumologic-cloudfoundry-nozzle/events"
 	"github.com/stretchr/testify/assert"
 )
 

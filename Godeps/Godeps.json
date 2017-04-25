@@ -1,5 +1,5 @@
 {
-	"ImportPath": "github.com/mcplusa/cloudfoundry-sumologic-nozzle",
+	"ImportPath": "github.com/SumoLogic/sumologic-cloudfoundry-nozzle",
 	"GoVersion": "go1.7",
 	"GodepVersion": "v75",
 	"Deps": [

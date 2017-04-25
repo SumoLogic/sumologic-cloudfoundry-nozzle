@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mcplusa/cloudfoundry-sumologic-nozzle/caching"
+	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/caching"
 )
 
 type FakeCaching struct {

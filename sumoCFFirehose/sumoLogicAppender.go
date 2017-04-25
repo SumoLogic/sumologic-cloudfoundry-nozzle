@@ -12,9 +12,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mcplusa/cloudfoundry-sumologic-nozzle/eventQueue"
-	"github.com/mcplusa/cloudfoundry-sumologic-nozzle/events"
-	"github.com/mcplusa/cloudfoundry-sumologic-nozzle/logging"
+	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/eventQueue"
+	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/events"
+	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/logging"
 )
 
 type SumoLogicAppender struct {

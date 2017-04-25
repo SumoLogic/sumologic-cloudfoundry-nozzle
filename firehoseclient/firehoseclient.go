@@ -8,8 +8,8 @@ import (
 	"github.com/cloudfoundry/noaa/consumer"
 	"github.com/cloudfoundry/sonde-go/events"
 	"github.com/gorilla/websocket"
-	"github.com/mcplusa/cloudfoundry-sumologic-nozzle/eventRouting"
-	"github.com/mcplusa/cloudfoundry-sumologic-nozzle/logging"
+	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/eventRouting"
+	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/logging"
 )
 
 type FirehoseNozzle struct {

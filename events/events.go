@@ -3,8 +3,8 @@ package events
 import (
 	"fmt"
 
-	"github.com/mcplusa/cloudfoundry-sumologic-nozzle/caching"
-	"github.com/mcplusa/cloudfoundry-sumologic-nozzle/utils"
+	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/caching"
+	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/utils"
 	"github.com/Sirupsen/logrus"
 	"github.com/cloudfoundry/sonde-go/events"
 )
