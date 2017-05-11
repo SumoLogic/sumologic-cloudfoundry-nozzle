@@ -1,1 +1,1 @@
-web: cloudfoundry-sumologic-nozzle
+web: sumologic-cloudfoundry-nozzle

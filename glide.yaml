@@ -1,4 +1,4 @@
-package: github.com/mcplusa/cloudfoundry-sumologic-nozzle
+package: github.com/SumoLogic/sumologic-cloudfoundry-nozzle
 import:
 - package: github.com/Sirupsen/logrus
   version: v0.10.0

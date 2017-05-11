@@ -1,4 +1,4 @@
-# cloudfoundry-sumologic-nozzle
+# sumologic-cloudfoundry-nozzle
 ===============================
 This Nozzle aggregates all the events from the _Firehose_ feature in Cloud Foundry towards Sumo Logic
 
@@ -92,7 +92,7 @@ The tile configuration is handled in the 'tile.yml' file. (If you want to modify
 
 ##### Step 1 - Install the tile-generator python package
 * Follow the Official Pivotal Instructions: http://docs.pivotal.io/tiledev/tile-generator.html#how-to
-(only until half of the _step 3_, DON'T DO 'tile init', only cd into the 'cloudfoundry-sumologic-nozzle' folder)
+(only until half of the _step 3_, DON'T DO 'tile init', only cd into the 'sumologic-cloudfoundry-nozzle' folder)
 
 ##### Step 2 - Check the tile file
 
@@ -118,49 +118,49 @@ The tile configuration is handled in the 'tile.yml' file. (If you want to modify
 
 ### Push as an app in a Cloud Foundry instance
 
-Step 1 - Download the latest release of cloudfoundry-sumologic-nozzle.
+Step 1 - Download the latest release of sumologic-cloudfoundry-nozzle.
 ```
-$ git clone https://github.com/mcplusa/cloudfoundry-sumologic-nozzle.git
-$ cd cloudfoundry-sumologic-nozzle
+$ git clone https://github.com/SumoLogic/sumologic-cloudfoundry-nozzle.git
+$ cd sumologic-cloudfoundry-nozzle
 ```
 
 Step 2 - Utilize the CF cli to authenticate with your PCF instance.
 ```
 $ cf login -a https://api.[your cf system domain] -u [your id] --skip-ssl-validation
 ```
-Step 3 - Push cloudfoundry-sumologic-nozzle
+Step 3 - Push sumologic-cloudfoundry-nozzle
 ```
-$ cf push cloudfoundry-sumologic-nozzle --no-start
+$ cf push sumologic-cloudfoundry-nozzle --no-start
 ```
-Step 4 - Set environment variables with cf cli or in the https://github.com/mcplusa/cloudfoundry-sumologic-nozzle/blob/master/manifest.yml. Example:
+Step 4 - Set environment variables with cf cli or in the https://github.com/SumoLogic/sumologic-cloudfoundry-nozzle/blob/master/manifest.yml. Example:
 ```
-$ cf set-env cloudfoundry-sumologic-nozzle API_ENDPOINT https://api.[your cf system domain]
-$ cf set-env cloudfoundry-sumologic-nozzle SUMO_ENDPOINT https://sumo-endpoint
-$ cf set-env cloudfoundry-sumologic-nozzle FIREHOSE_SUBSCRIPTION_ID cloudfoundry-sumologic-nozzle
-$ cf set-env cloudfoundry-sumologic-nozzle CLOUDFOUNDRY_USER [your doppler.firehose enabled user]
-$ cf set-env cloudfoundry-sumologic-nozzle CLOUDFOUNDRY_PASSWORD [your doppler.firehose enabled user password]
-$ cf set-env cloudfoundry-sumologic-nozzle EVENTS LogMessage
-$ cf set-env cloudfoundry-sumologic-nozzle NOZZLE_POLLING_PERIOD 15s
-$ cf set-env cloudfoundry-sumologic-nozzle LOG_EVENTS_BATCHSIZE  200
-$ cf set-env cloudfoundry-sumologic-nozzle SUMO_POST_MINIMUM_DELAY 200ms
-$ cf set-env cloudfoundry-sumologic-nozzle SUMO_CATEGORY ExampleCategory
-$ cf set-env cloudfoundry-sumologic-nozzle SUMO_NAME ExampleName
-$ cf set-env cloudfoundry-sumologic-nozzle SUMO_HOST [some ip]
-$ cf set-env cloudfoundry-sumologic-nozzle VERBOSE_LOG_MESSAGES  false
-$ cf set-env cloudfoundry-sumologic-nozzle CUSTOM_METADATA customData1:customValue1,CustomData2:CustomValue2
-$ cf set-env cloudfoundry-sumologic-nozzle INCLUDE_ONLY_MATCHING_FILTER ""
-$ cf set-env cloudfoundry-sumologic-nozzle EXCLUDE_ALWAYS_MATCHING_FILTER ""
+$ cf set-env sumologic-cloudfoundry-nozzle API_ENDPOINT https://api.[your cf system domain]
+$ cf set-env sumologic-cloudfoundry-nozzle SUMO_ENDPOINT https://sumo-endpoint
+$ cf set-env sumologic-cloudfoundry-nozzle FIREHOSE_SUBSCRIPTION_ID sumologic-cloudfoundry-nozzle
+$ cf set-env sumologic-cloudfoundry-nozzle CLOUDFOUNDRY_USER [your doppler.firehose enabled user]
+$ cf set-env sumologic-cloudfoundry-nozzle CLOUDFOUNDRY_PASSWORD [your doppler.firehose enabled user password]
+$ cf set-env sumologic-cloudfoundry-nozzle EVENTS LogMessage
+$ cf set-env sumologic-cloudfoundry-nozzle NOZZLE_POLLING_PERIOD 15s
+$ cf set-env sumologic-cloudfoundry-nozzle LOG_EVENTS_BATCHSIZE  200
+$ cf set-env sumologic-cloudfoundry-nozzle SUMO_POST_MINIMUM_DELAY 200ms
+$ cf set-env sumologic-cloudfoundry-nozzle SUMO_CATEGORY ExampleCategory
+$ cf set-env sumologic-cloudfoundry-nozzle SUMO_NAME ExampleName
+$ cf set-env sumologic-cloudfoundry-nozzle SUMO_HOST [some ip]
+$ cf set-env sumologic-cloudfoundry-nozzle VERBOSE_LOG_MESSAGES  false
+$ cf set-env sumologic-cloudfoundry-nozzle CUSTOM_METADATA customData1:customValue1,CustomData2:CustomValue2
+$ cf set-env sumologic-cloudfoundry-nozzle INCLUDE_ONLY_MATCHING_FILTER ""
+$ cf set-env sumologic-cloudfoundry-nozzle EXCLUDE_ALWAYS_MATCHING_FILTER ""
 ```
 
 Step 5 - Turn off the health check if you're staging to Diego.
 
 ```
-$ cf set-health-check cloudfoundry-sumologic-nozzle none
+$ cf set-health-check sumologic-cloudfoundry-nozzle none
 ```
 
 Step 6 - Push the app.
 ```
-$ cf push cloudfoundry-sumologic-nozzle --no-route
+$ cf push sumologic-cloudfoundry-nozzle --no-route
 ```
 ## Authors
 

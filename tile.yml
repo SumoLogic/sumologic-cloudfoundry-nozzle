@@ -31,7 +31,7 @@ packages:
   manifest:
     # any options that you would normally specify in a cf manifest.yml, including</i>
     buildpack: go_buildpack
-    command: cloudfoundry-sumologic-nozzle
+    command: sumologic-cloudfoundry-nozzle
     instances: 2
     path: sumo-logic-nozzle.zip
   health_check: none
