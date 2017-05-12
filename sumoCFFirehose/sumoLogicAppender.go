@@ -73,7 +73,7 @@ func (s *SumoLogicAppender) Start() {
 	Buffer.timerIdlebuffer = time.Now()
 	logging.Info.Println("Starting Appender Worker")
 	for {
-		logging.Info.Printf("Log queue size: %d", s.nozzleQueue.GetCount())
+		//logging.Info.Printf("Log queue size: %d", s.nozzleQueue.GetCount())
 		if s.nozzleQueue.GetCount() == 0 {
 			logging.Trace.Println("Waiting for 300 ms")
 			time.Sleep(300 * time.Millisecond)
