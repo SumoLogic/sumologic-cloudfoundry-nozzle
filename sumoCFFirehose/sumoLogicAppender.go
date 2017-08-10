@@ -33,6 +33,7 @@ type SumoLogicAppender struct {
 	includeOnlyMatchingFilter   string
 	excludeAlwaysMatchingFilter string
 	nozzleVersion               string
+	logDelay					time.Time
 }
 
 type SumoBuffer struct {
@@ -71,16 +72,21 @@ func (s *SumoLogicAppender) Start() {
 	s.timerBetweenPost = time.Now()
 	Buffer := newBuffer()
 	Buffer.timerIdlebuffer = time.Now()
+	s.logDelay = time.Now()
 	logging.Info.Println("Starting Appender Worker")
 	for {
-		//logging.Info.Printf("Log queue size: %d", s.nozzleQueue.GetCount())
+		if time.Since(s.logDelay).Seconds() >= 10 {
+			logging.Info.Printf("Log queue size: %d", s.nozzleQueue.GetCount())
+			s.logDelay = time.Now()
+		}
+
 		if s.nozzleQueue.GetCount() == 0 {
 			logging.Trace.Println("Waiting for 300 ms")
 			time.Sleep(300 * time.Millisecond)
 		}
 
 		if time.Since(Buffer.timerIdlebuffer).Seconds() >= 10 && Buffer.logEventsInCurrentBuffer > 0 {
-			logging.Info.Println("Sending current batch of logs after timer exceeded limit")
+			logging.Info.Println("Sending batch after timer exceeded... #of Events: ", Buffer.logEventsInCurrentBuffer)
 			go s.SendToSumo(Buffer.logStringToSend.String())
 			Buffer = newBuffer()
 			Buffer.timerIdlebuffer = time.Now()
