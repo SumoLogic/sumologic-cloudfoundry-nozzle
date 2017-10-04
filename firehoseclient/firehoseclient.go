@@ -79,16 +79,22 @@ func (f *FirehoseNozzle) handleError(err error) {
 	switch {
 	case websocket.IsCloseError(err, websocket.CloseNormalClosure):
 		logging.Error.Printf("Normal Websocket Closure: %v ", err)
+		logging.Error.Printf("Closing connection with traffic controller due to error: %v", err)
+		f.consumer.Close()
 	case websocket.IsCloseError(err, websocket.ClosePolicyViolation):
 		logging.Error.Printf("Error while reading from the firehose: %v ", err)
 		logging.Error.Println("Disconnected because nozzle couldn't keep up. Please try scaling up the nozzle.")
-
+		logging.Trace.Println("Waiting for 60 seconds")
+		time.Sleep(60000 * time.Millisecond)
+		logging.Trace.Println("Trying to re-start firehose Client after fault...")
+		f.Start()
 	default:
 		logging.Error.Printf("Error while reading from the firehose: %v", err)
+		logging.Trace.Println("Waiting for 60 seconds")
+		time.Sleep(60000 * time.Millisecond)
+		logging.Trace.Println("Trying to re-start firehose Client after fault...")
+		f.Start()
 	}
-
-	logging.Error.Printf("Closing connection with traffic controller due to error: %v", err)
-	f.consumer.Close()
 }
 
 func (f *FirehoseNozzle) handleMessage(envelope *events.Envelope) {
