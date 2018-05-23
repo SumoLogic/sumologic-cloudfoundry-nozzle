@@ -103,9 +103,14 @@ func LogMessage(msg *events.Envelope) *Event {
 
 func ValueMetric(msg *events.Envelope) *Event {
 	valMetric := msg.GetValueMetric()
-
+	
 	fields := logrus.Fields{
+		"deployment": msg.GetDeployment,
+		"index": msg.GetIndex,
+		"ip": msg.GetIp,
+		"job": msg.GetJob,
 		"name":  valMetric.GetName(),
+		"timestamp": msg.GetTimestamp(),
 		"unit":  valMetric.GetUnit(),
 		"value": valMetric.GetValue(),
 	}
@@ -120,7 +125,12 @@ func CounterEvent(msg *events.Envelope) *Event {
 	counterEvent := msg.GetCounterEvent()
 
 	fields := logrus.Fields{
+		"deployment": msg.GetDeployment,
+		"index": msg.GetIndex,
+		"ip": msg.GetIp,
+		"job": msg.GetJob,
 		"name":  counterEvent.GetName(),
+		"timestamp": msg.GetTimestamp(),
 		"delta": counterEvent.GetDelta(),
 		"total": counterEvent.GetTotal(),
 	}
@@ -135,6 +145,7 @@ func ErrorEvent(msg *events.Envelope) *Event {
 	errorEvent := msg.GetError()
 
 	fields := logrus.Fields{
+		"timestamp": msg.GetTimestamp(),
 		"code":   errorEvent.GetCode(),
 		"source": errorEvent.GetSource(),
 	}
@@ -149,7 +160,12 @@ func ContainerMetric(msg *events.Envelope) *Event {
 	containerMetric := msg.GetContainerMetric()
 
 	fields := logrus.Fields{
+		"deployment": msg.GetDeployment,
+		"index": msg.GetIndex,
+		"ip": msg.GetIp,
+		"job": msg.GetJob,
 		"cf_app_id":          containerMetric.GetApplicationId(),
+		"timestamp":		  msg.GetTimestamp(),
 		"cpu_percentage":     containerMetric.GetCpuPercentage(),
 		"disk_bytes":         containerMetric.GetDiskBytes(),
 		"disk_bytes_quota":   containerMetric.GetDiskBytesQuota(),

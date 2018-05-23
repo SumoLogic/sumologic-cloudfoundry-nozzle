@@ -4,7 +4,14 @@ applications:
   no-route: true
 env:
   API_ENDPOINT: https://api.some_api
-  SUMO_ENDPOINT: https://some_endpoint
+  SUMO_ENDPOINTS: '[
+      {
+        "endpoint": "https://localhost1"
+      },
+      {
+        "endpoint": "https://localhost2"
+      }
+    ]'
   FIREHOSE_SUBSCRIPTION_ID: cloudfoundry-sumologic-nozzle
   CLOUDFOUNDRY_USER: firehose_user_authorized
   CLOUDFOUNDRY_PASSWORD: password_firehose_user_authorized

@@ -26,7 +26,7 @@ properties:
 
 
 packages:
-- name: sumo-logic-nozzle
+- name: sumo_logic_nozzle
   type: app
   manifest:
     # any options that you would normally specify in a cf manifest.yml, including</i>
@@ -43,41 +43,45 @@ forms:
   label: Sumo Logic Settings
   description: Sumo Logic Settings details
   properties:
-  - name: sumo-endpoint
-    type: string
-    label: Sumo Logic Endpoint
-    description: Complete URL for the endpoint, copied from the Sumo Logic HTTP Source configuration
-  - name: sumo-post-minimum-delay
+  - name: sumo_endpoints
+    type: collection
+    label: Sumo Logic Endpoints
+    property_blueprints:
+      - name: endpoint
+        type: string
+        label: Endpoint
+        description: Complete URL for the endpoint, copied from the Sumo Logic HTTP Source configuration
+  - name: sumo_post_minimum_delay
     type: string
     label: Sumo Logic Post Minimum Delay
     description: Minimum time between HTTP POST to Sumo Logic
     default: 2000ms
-  - name: sumo-category
+  - name: sumo_category
     type: string
     label: Sumo Logic Category
     description: This value overrides the default 'Source Category' associated with the configured Sumo Logic HTTP Source
     optional: true
-  - name: sumo-name
+  - name: sumo_name
     type: string
     label: Sumo Logic Name
     description: This value overrides the default 'Source Name' associated with the configured Sumo Logic HTTP Source
     optional: true
-  - name: sumo-host
+  - name: sumo_host
     type: string
     label: Sumo Logic Host
     description: This value overrides the default 'Source Host' associated with the configured Sumo Logic HTTP Source
     optional: true
-  - name: custom-metadata
+  - name: custom_metadata
     type: string
     label: Custom Metadata
     description: Use this field for addingCustom Metadata to the JSON (key1:value1,key2:value2, etc...)
     optional: true
-  - name: include-only-matching-filter
+  - name: include_only_matching_filter
     type: string
     label: Include Only Matching Filter
     description: Adds an 'Include only' filter to Events content (key1:value1,key2:value2, etc...)
     optional: true
-  - name: exclude-always-matching-filter
+  - name: exclude_always_matching_filter
     type: string
     label: Exclude Always Filter
     description: Adds an 'Exclude always' filter to Events content (key1:value1,key2:value2, etc...)
@@ -89,19 +93,19 @@ forms:
   label: Cloud Foundry Settings
   description: Cloud Foundry Settings details
   properties:
-  - name: api-endpoint
+  - name: api_endpoint
     type: string
     label: Cloud Foundry API Endpoint
     description: URL to CF API Endpoint
-  - name: cloudfoundry-user
+  - name: cloudfoundry_user
     type: string
     label: Cloud Foundry User
     description: Nozzle user
-  - name: cloudfoundry-password
+  - name: cloudfoundry_password
     type: secret
     label: Cloud Foundry Password
     description: Password for API user
-  - name: log-events-batch-size
+  - name: log_events_batch_size
     type: string
     label: Log Events Batch Size
     description: When number of messages in the buffer is equal to this field, send those to Sumo Logic
@@ -111,17 +115,17 @@ forms:
     label: Comma separated list of events you would like (Default is "LogMessage")
     default: LogMessage
     description: Valid options are Error,ContainerMetric,HttpStart,HttpStop,HttpStartStop,LogMessage,ValueMetric,CounterEvent
-  - name: skip-ssl-validation
+  - name: skip_ssl_validation
     type: boolean
     label: Skip SSL validation
     default: false
     description: Skip SSL validation (to allow things like self-signed certs). Do not set to true in production
-  - name: verbose-log-messages
+  - name: verbose_log_messages
     type: boolean
     label: Verbose in 'LogMessage' event
     default: true
     description: Enable Verbose in 'LogMessage' Event. If is not checked, the 'LogMessage' will contain ONLY the fields 'tiemstamp', 'cf_app_guid', 'Msg'
-  - name: nozzle-polling-period
+  - name: nozzle_polling_period
     type: string
     label: Nozzle Polling Period
     default: 15s
