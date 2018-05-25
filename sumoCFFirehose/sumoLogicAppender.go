@@ -323,7 +323,10 @@ func (s *SumoLogicAppender) AppendLogs(buffer *SumoBuffer) {
 	} else {
 		buffer.logStringToSend.Write([]byte(eventString))
 	}
-	buffer.eventsInCurrentBuffer++
+	if eventString != "" {
+		newLines := strings.Count(eventString, "\n")
+		buffer.eventsInCurrentBuffer += newLines
+	}
 }
 
 func ParseCustomInput(customInput string) map[string][]string {
