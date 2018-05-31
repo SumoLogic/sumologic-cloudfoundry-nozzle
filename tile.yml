@@ -128,5 +128,5 @@ forms:
   - name: nozzle_polling_period
     type: string
     label: Nozzle Polling Period
-    default: 15s
+    default: 5m
     description: How frequently this Nozzle polls the CF Firehose for data
