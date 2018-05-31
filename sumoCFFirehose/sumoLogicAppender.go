@@ -221,7 +221,7 @@ func StringBuilder(event *events.Event, verboseLogMessages bool, includeOnlyMatc
 			eventNoVerbose := events.Event{
 				Fields: map[string]interface{}{
 					"timestamp":   event.Fields["timestamp"],
-					"cf_app_guid": event.Fields["cf_app_id"],
+					"cf_app_id": event.Fields["cf_app_id"],
 					"deployment": event.Fields["deployment"],
 					"job_index": event.Fields["job_index"],
 					"job": event.Fields["job"],
