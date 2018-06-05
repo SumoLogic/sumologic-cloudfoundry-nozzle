@@ -226,6 +226,7 @@ func StringBuilder(event *events.Event, verboseLogMessages bool, includeOnlyMatc
 					"job_index": event.Fields["job_index"],
 					"job": event.Fields["job"],
 					"ip": event.Fields["ip"],
+					"origin": event.Fields["origin"],
 				},
 				Msg:  event.Msg,
 				Type: event.Type,
@@ -251,13 +252,14 @@ func StringBuilder(event *events.Event, verboseLogMessages bool, includeOnlyMatc
 			ip = fmt.Sprintf(" ip=%s", ipString)
 		}
 		job := event.Fields["job"]
+		origin := event.Fields["origin"]
 		eventUnit := event.Fields["unit"]
 		units := ""
 		if eventUnit != nil && eventUnit != "" {
 			units = fmt.Sprintf(" unit=%s", eventUnit)
 		}
-		msg = []byte(fmt.Sprintf("deployment=%s job_index=%s%s job=%s name=%s %s %f %d", 
-			deployment, jobIndex, ip, job, event.Fields["name"], units, event.Fields["value"], event.Fields["timestamp"]))
+		msg = []byte(fmt.Sprintf("deployment=%s job_index=%s%s job=%s origin=%s name=%s %s %f %d", 
+			deployment, jobIndex, ip, job, origin, event.Fields["name"], units, event.Fields["value"], event.Fields["timestamp"]))
 	case "CounterEvent":
 		FormatTimestamp(event, "timestamp")
 		deployment := event.Fields["deployment"]
@@ -268,12 +270,13 @@ func StringBuilder(event *events.Event, verboseLogMessages bool, includeOnlyMatc
 			ip = fmt.Sprintf(" ip=%s", ipString)
 		}
 		job := event.Fields["job"]
+		origin := event.Fields["origin"]
 		name := event.Fields["name"]
 		timestamp := event.Fields["timestamp"]
-		msg = []byte(fmt.Sprintf("deployment=%s job_index=%s%s job=%s name=%s_total  %d %d\n" +
-			"deployment=%s job_index=%s%s job=%s name=%s_delta  %d %d", 
-			deployment, jobIndex, ip, job, name, event.Fields["total"], timestamp,
-			deployment, jobIndex, ip, job, name, event.Fields["delta"], timestamp))
+		msg = []byte(fmt.Sprintf("deployment=%s job_index=%s%s job=%s origin=%s name=%s_total  %d %d\n" +
+			"deployment=%s job_index=%s%s job=%s origin=%s name=%s_delta  %d %d", 
+			deployment, jobIndex, ip, job, origin, name, event.Fields["total"], timestamp,
+			deployment, jobIndex, ip, job, origin, name, event.Fields["delta"], timestamp))
 	case "Error":
 		message, err := json.Marshal(event)
 		if err == nil {
@@ -289,19 +292,20 @@ func StringBuilder(event *events.Event, verboseLogMessages bool, includeOnlyMatc
 			ip = fmt.Sprintf(" ip=%s", ipString)
 		}
 		job := event.Fields["job"]
+		origin := event.Fields["origin"]
 		cfAppId := event.Fields["cf_app_id"]
 		instanceIndex := event.Fields["instance_index"]
 		timestamp := event.Fields["timestamp"]
-		msg = []byte(fmt.Sprintf("deployment=%s job_index=%s%s job=%s cf_app_id=%s instance_index=%d name=cpu_percentage  %f %d\n" +
-			"deployment=%s job_index=%s%s job=%s cf_app_id=%s instance_index=%d name=disk_bytes  %d %d\n" +
-			"deployment=%s job_index=%s%s job=%s cf_app_id=%s instance_index=%d name=disk_bytes_quota  %d %d\n" +
-			"deployment=%s job_index=%s%s job=%s cf_app_id=%s instance_index=%d name=memory_bytes  %d %d\n" +
-			"deployment=%s job_index=%s%s job=%s cf_app_id=%s instance_index=%d name=memory_bytes_quota  %d %d", 
-			deployment, jobIndex, ip, job, cfAppId, instanceIndex, event.Fields["cpu_percentage"], timestamp,
-			deployment, jobIndex, ip, job, cfAppId, instanceIndex, event.Fields["disk_bytes"], timestamp,
-			deployment, jobIndex, ip, job, cfAppId, instanceIndex, event.Fields["disk_bytes_quota"], timestamp,
-			deployment, jobIndex, ip, job, cfAppId, instanceIndex, event.Fields["memory_bytes"], timestamp,
-			deployment, jobIndex, ip, job, cfAppId, instanceIndex, event.Fields["memory_bytes_quota"], timestamp))
+		msg = []byte(fmt.Sprintf("deployment=%s job_index=%s%s job=%s origin=%s cf_app_id=%s instance_index=%d name=cpu_percentage  %f %d\n" +
+			"deployment=%s job_index=%s%s job=%s origin=%s cf_app_id=%s instance_index=%d name=disk_bytes  %d %d\n" +
+			"deployment=%s job_index=%s%s job=%s origin=%s cf_app_id=%s instance_index=%d name=disk_bytes_quota  %d %d\n" +
+			"deployment=%s job_index=%s%s job=%s origin=%s cf_app_id=%s instance_index=%d name=memory_bytes  %d %d\n" +
+			"deployment=%s job_index=%s%s job=%s origin=%s cf_app_id=%s instance_index=%d name=memory_bytes_quota  %d %d", 
+			deployment, jobIndex, ip, job, origin, cfAppId, instanceIndex, event.Fields["cpu_percentage"], timestamp,
+			deployment, jobIndex, ip, job, origin, cfAppId, instanceIndex, event.Fields["disk_bytes"], timestamp,
+			deployment, jobIndex, ip, job, origin, cfAppId, instanceIndex, event.Fields["disk_bytes_quota"], timestamp,
+			deployment, jobIndex, ip, job, origin, cfAppId, instanceIndex, event.Fields["memory_bytes"], timestamp,
+			deployment, jobIndex, ip, job, origin, cfAppId, instanceIndex, event.Fields["memory_bytes_quota"], timestamp))
 	}
 
 	buf := new(bytes.Buffer)
@@ -309,7 +313,7 @@ func StringBuilder(event *events.Event, verboseLogMessages bool, includeOnlyMatc
 	result := ""
 	for _, message := range strings.Split(buf.String(), "\n") {
 		if WantedEvent(message, includeOnlyMatchingFilter, excludeAlwaysMatchingFilter) {
-			result += message + "\n"
+			result += message + "\n"			
 		}
 	}
 	return result
