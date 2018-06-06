@@ -258,7 +258,7 @@ func StringBuilder(event *events.Event, verboseLogMessages bool, includeOnlyMatc
 		if eventUnit != nil && eventUnit != "" {
 			units = fmt.Sprintf(" unit=%s", eventUnit)
 		}
-		msg = []byte(fmt.Sprintf("deployment=%s job_index=%s%s job=%s origin=%s name=%s %s %f %d", 
+		msg = []byte(fmt.Sprintf("deployment=%s job_index=%s%s job=%s origin=%s metric=%s %s %f %d", 
 			deployment, jobIndex, ip, job, origin, event.Fields["name"], units, event.Fields["value"], event.Fields["timestamp"]))
 	case "CounterEvent":
 		FormatTimestamp(event, "timestamp")
@@ -273,8 +273,8 @@ func StringBuilder(event *events.Event, verboseLogMessages bool, includeOnlyMatc
 		origin := event.Fields["origin"]
 		name := event.Fields["name"]
 		timestamp := event.Fields["timestamp"]
-		msg = []byte(fmt.Sprintf("deployment=%s job_index=%s%s job=%s origin=%s name=%s_total  %d %d\n" +
-			"deployment=%s job_index=%s%s job=%s origin=%s name=%s_delta  %d %d", 
+		msg = []byte(fmt.Sprintf("deployment=%s job_index=%s%s job=%s origin=%s metric=%s_total  %d %d\n" +
+			"deployment=%s job_index=%s%s job=%s origin=%s metric=%s_delta  %d %d", 
 			deployment, jobIndex, ip, job, origin, name, event.Fields["total"], timestamp,
 			deployment, jobIndex, ip, job, origin, name, event.Fields["delta"], timestamp))
 	case "Error":
@@ -296,11 +296,11 @@ func StringBuilder(event *events.Event, verboseLogMessages bool, includeOnlyMatc
 		cfAppId := event.Fields["cf_app_id"]
 		instanceIndex := event.Fields["instance_index"]
 		timestamp := event.Fields["timestamp"]
-		msg = []byte(fmt.Sprintf("deployment=%s job_index=%s%s job=%s origin=%s cf_app_id=%s instance_index=%d name=cpu_percentage  %f %d\n" +
-			"deployment=%s job_index=%s%s job=%s origin=%s cf_app_id=%s instance_index=%d name=disk_bytes  %d %d\n" +
-			"deployment=%s job_index=%s%s job=%s origin=%s cf_app_id=%s instance_index=%d name=disk_bytes_quota  %d %d\n" +
-			"deployment=%s job_index=%s%s job=%s origin=%s cf_app_id=%s instance_index=%d name=memory_bytes  %d %d\n" +
-			"deployment=%s job_index=%s%s job=%s origin=%s cf_app_id=%s instance_index=%d name=memory_bytes_quota  %d %d", 
+		msg = []byte(fmt.Sprintf("deployment=%s job_index=%s%s job=%s origin=%s cf_app_id=%s instance_index=%d metric=cpu_percentage  %f %d\n" +
+			"deployment=%s job_index=%s%s job=%s origin=%s cf_app_id=%s instance_index=%d metric=disk_bytes  %d %d\n" +
+			"deployment=%s job_index=%s%s job=%s origin=%s cf_app_id=%s instance_index=%d metric=disk_bytes_quota  %d %d\n" +
+			"deployment=%s job_index=%s%s job=%s origin=%s cf_app_id=%s instance_index=%d metric=memory_bytes  %d %d\n" +
+			"deployment=%s job_index=%s%s job=%s origin=%s cf_app_id=%s instance_index=%d metric=memory_bytes_quota  %d %d", 
 			deployment, jobIndex, ip, job, origin, cfAppId, instanceIndex, event.Fields["cpu_percentage"], timestamp,
 			deployment, jobIndex, ip, job, origin, cfAppId, instanceIndex, event.Fields["disk_bytes"], timestamp,
 			deployment, jobIndex, ip, job, origin, cfAppId, instanceIndex, event.Fields["disk_bytes_quota"], timestamp,
