@@ -18,7 +18,7 @@ import (
 )
 
 type SumoLogicAppender struct {
-	urls                        []string
+	url                         string
 	connectionTimeout           int //10000
 	httpClient                  http.Client
 	nozzleQueue                 *eventQueue.Queue
@@ -43,9 +43,9 @@ type SumoBuffer struct {
 	timerIdlebuffer         time.Time
 }
 
-func NewSumoLogicAppender(urlValues []string, connectionTimeoutValue int, nozzleQueue *eventQueue.Queue, eventsBatchSize int, sumoPostMinimumDelay time.Duration, sumoCategory string, sumoName string, sumoHost string, verboseLogMessages bool, customMetadata string, includeOnlyMatchingFilter string, excludeAlwaysMatchingFilter string, nozzleVersion string) *SumoLogicAppender {
+func NewSumoLogicAppender(urlValue string, connectionTimeoutValue int, nozzleQueue *eventQueue.Queue, eventsBatchSize int, sumoPostMinimumDelay time.Duration, sumoCategory string, sumoName string, sumoHost string, verboseLogMessages bool, customMetadata string, includeOnlyMatchingFilter string, excludeAlwaysMatchingFilter string, nozzleVersion string) *SumoLogicAppender {
 	return &SumoLogicAppender{
-		urls:                        urlValues,
+		url:                         urlValue,
 		connectionTimeout:           connectionTimeoutValue,
 		httpClient:                  http.Client{Timeout: time.Duration(connectionTimeoutValue * int(time.Millisecond))},
 		nozzleQueue:                 nozzleQueue,
@@ -89,10 +89,10 @@ func (s *SumoLogicAppender) Start() {
 
 		if time.Since(Buffer.timerIdlebuffer).Seconds() >= 10 && Buffer.eventsInCurrentBuffer > 0 {
 			logging.Info.Println("Sending batch after timer exceeded... #of Events: ", Buffer.eventsInCurrentBuffer)
-			for _, url := range s.urls {
-				go s.SendToSumo(Buffer.logStringToSend.String(), url, false)
-				go s.SendToSumo(Buffer.metricStringToSend.String(), url, true)
-			}
+
+			go s.SendToSumo(Buffer.logStringToSend.String(), s.url, false)
+			go s.SendToSumo(Buffer.metricStringToSend.String(), s.url, true)
+
 			Buffer = newBuffer()
 			Buffer.timerIdlebuffer = time.Now()
 			continue
@@ -109,10 +109,9 @@ func (s *SumoLogicAppender) Start() {
 					Buffer.timerIdlebuffer = time.Now()
 				}
 
-				for _, url := range s.urls {
-					go s.SendToSumo(Buffer.logStringToSend.String(), url, false)
-					go s.SendToSumo(Buffer.metricStringToSend.String(), url, true)
-				}
+				go s.SendToSumo(Buffer.logStringToSend.String(), s.url, false)
+				go s.SendToSumo(Buffer.metricStringToSend.String(), s.url, true)
+
 				Buffer = newBuffer()
 			} else {
 				logging.Trace.Println("Pushing Logs to Buffer: ")
@@ -320,7 +319,7 @@ func StringBuilder(event *events.Event, verboseLogMessages bool, includeOnlyMatc
 }
 
 func (s *SumoLogicAppender) AppendLogs(buffer *SumoBuffer) {
-	event := s.nozzleQueue.Pop()
+	event := s.nozzleQueue.Pop().CopyEvent()
 	eventString := StringBuilder(event, s.verboseLogMessages, s.includeOnlyMatchingFilter, s.excludeAlwaysMatchingFilter, s.customMetadata)
 	if event.Type == "ValueMetric" || event.Type == "CounterEvent" || event.Type == "ContainerMetric" {
 		buffer.metricStringToSend.Write([]byte(eventString))

@@ -219,7 +219,6 @@ func (e *Event) AnnotateWithAppData(caching caching.Caching) {
 		}
 
 		e.Fields["cf_ignored_app"] = cf_ignored_app
-
 	}
 }
 
@@ -238,5 +237,18 @@ func (e *Event) AnnotateWithEnveloppeData(msg *events.Envelope) {
 	e.Fields["job"] = msg.GetJob()
 	e.Fields["job_index"] = msg.GetIndex()
 	e.Type = msg.GetEventType().String()
+}
 
+func (e *Event) CopyEvent() *Event {
+	fields := make(map[string]interface{})
+	
+	for k, v := range e.Fields {
+		fields[k] = v
+	}
+
+	return &Event{
+		Fields: fields,
+		Msg:  	e.Msg,
+		Type: 	e.Type,
+	}
 }
