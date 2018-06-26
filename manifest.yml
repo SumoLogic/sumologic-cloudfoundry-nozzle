@@ -3,7 +3,7 @@ applications:
   health-check-type: none
   no-route: true
 env:
-  # API_ENDPOINT:
+  API_ENDPOINT: ""
   SUMO_ENDPOINTS: '[
       {
         "endpoint": "https://localhost1",
