@@ -16,13 +16,13 @@ org_quota: 4096                       # Optional, memory quota in mb
 stemcell_criteria:
   os: ubuntu-trusty
   requires_cpi: false
-  version: '3263'
+  version: '3363'
 
 properties:
 - name: author
   type: string
   label: Author
-  value: mcplusa.com
+  value: sumologic.com
 
 
 packages:
