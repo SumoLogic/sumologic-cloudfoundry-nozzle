@@ -37,9 +37,10 @@ type SumoLogicAppender struct {
 }
 
 type SumoBuffer struct {
-	logStringToSend          *bytes.Buffer
-	logEventsInCurrentBuffer int
-	timerIdlebuffer          time.Time
+	eventsInCurrentBuffer 	int
+	logStringToSend   		*bytes.Buffer
+	metricStringToSend		*bytes.Buffer
+	timerIdlebuffer         time.Time
 }
 
 func NewSumoLogicAppender(urlValue string, connectionTimeoutValue int, nozzleQueue *eventQueue.Queue, eventsBatchSize int, sumoPostMinimumDelay time.Duration, sumoCategory string, sumoName string, sumoHost string, verboseLogMessages bool, customMetadata string, includeOnlyMatchingFilter string, excludeAlwaysMatchingFilter string, nozzleVersion string) *SumoLogicAppender {
@@ -63,8 +64,9 @@ func NewSumoLogicAppender(urlValue string, connectionTimeoutValue int, nozzleQue
 
 func newBuffer() SumoBuffer {
 	return SumoBuffer{
-		logStringToSend:          bytes.NewBufferString(""),
-		logEventsInCurrentBuffer: 0,
+		eventsInCurrentBuffer:	0,
+		logStringToSend:	    bytes.NewBufferString(""),
+		metricStringToSend:     bytes.NewBufferString(""),
 	}
 }
 
@@ -85,9 +87,12 @@ func (s *SumoLogicAppender) Start() {
 			time.Sleep(300 * time.Millisecond)
 		}
 
-		if time.Since(Buffer.timerIdlebuffer).Seconds() >= 10 && Buffer.logEventsInCurrentBuffer > 0 {
-			logging.Info.Println("Sending batch after timer exceeded... #of Events: ", Buffer.logEventsInCurrentBuffer)
-			go s.SendToSumo(Buffer.logStringToSend.String())
+		if time.Since(Buffer.timerIdlebuffer).Seconds() >= 10 && Buffer.eventsInCurrentBuffer > 0 {
+			logging.Info.Println("Sending batch after timer exceeded... #of Events: ", Buffer.eventsInCurrentBuffer)
+
+			go s.SendToSumo(Buffer.logStringToSend.String(), s.url, false)
+			go s.SendToSumo(Buffer.metricStringToSend.String(), s.url, true)
+
 			Buffer = newBuffer()
 			Buffer.timerIdlebuffer = time.Now()
 			continue
@@ -95,7 +100,7 @@ func (s *SumoLogicAppender) Start() {
 
 		if s.nozzleQueue.GetCount() != 0 {
 			queueCount := s.nozzleQueue.GetCount()
-			remainingBufferCount := s.eventsBatchSize - Buffer.logEventsInCurrentBuffer
+			remainingBufferCount := s.eventsBatchSize - Buffer.eventsInCurrentBuffer
 			if queueCount >= remainingBufferCount {
 				logging.Trace.Println("Pushing Logs to Sumo: ")
 				logging.Trace.Println(remainingBufferCount)
@@ -104,7 +109,9 @@ func (s *SumoLogicAppender) Start() {
 					Buffer.timerIdlebuffer = time.Now()
 				}
 
-				go s.SendToSumo(Buffer.logStringToSend.String())
+				go s.SendToSumo(Buffer.logStringToSend.String(), s.url, false)
+				go s.SendToSumo(Buffer.metricStringToSend.String(), s.url, true)
+
 				Buffer = newBuffer()
 			} else {
 				logging.Trace.Println("Pushing Logs to Buffer: ")
@@ -115,51 +122,42 @@ func (s *SumoLogicAppender) Start() {
 				}
 			}
 		}
-
 	}
-
 }
+
 func WantedEvent(event string, includeOnlyMatchingFilter string, excludeAlwaysMatchingFilter string) bool {
-	if includeOnlyMatchingFilter != "" && excludeAlwaysMatchingFilter != "" {
-		subsliceInclude := ParseCustomInput(includeOnlyMatchingFilter)
-		subsliceExclude := ParseCustomInput(excludeAlwaysMatchingFilter)
-		for key, value := range subsliceInclude {
-			if strings.Contains(event, "\""+key+"\":\""+value+"\"") {
-				for key, value := range subsliceExclude {
-					if strings.Contains(event, "\""+key+"\":\""+value+"\"") {
+	if includeOnlyMatchingFilter != "" {
+		subslice := ParseCustomInput(includeOnlyMatchingFilter)
+		for key, values := range subslice {
+			if (strings.Contains(event, "\""+key+"\":\"") || strings.Contains(event, key+"=")) {
+				include := false
+				for _, value := range values {
+					if strings.Contains(event, "\""+key+"\":\""+value+"\"") || strings.Contains(event, key+"="+value+" ") {
+						include = true
+						break
+					}
+				}
+				if !include {
+					return false
+				}
+			}
+		}
+	}
+	if excludeAlwaysMatchingFilter != "" {
+		subslice := ParseCustomInput(excludeAlwaysMatchingFilter)
+		for key, values := range subslice {
+			if (strings.Contains(event, "\""+key+"\":\"") || strings.Contains(event, key+"=")) {
+				for _, value := range values {
+					if strings.Contains(event, "\""+key+"\":\""+value+"\"") || strings.Contains(event, key+"="+value+" ") {
 						return false
 					}
 				}
-				return true
 			}
 		}
-		for key, value := range subsliceExclude {
-			if strings.Contains(event, "\""+key+"\":\""+value+"\"") {
-				return false
-			}
-		}
-		return true
-	} else if includeOnlyMatchingFilter != "" {
-		subslice := ParseCustomInput(includeOnlyMatchingFilter)
-		for key, value := range subslice {
-			if strings.Contains(event, "\""+key+"\":\""+value+"\"") {
-				return true
-			}
-		}
-		return false
-
-	} else if excludeAlwaysMatchingFilter != "" {
-		subslice := ParseCustomInput(excludeAlwaysMatchingFilter)
-		for key, value := range subslice {
-			if strings.Contains(event, "\""+key+"\":\""+value+"\"") {
-				return false
-			}
-		}
-		return true
 	}
 	return true
-
 }
+
 func FormatTimestamp(event *events.Event, timestamp string) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -167,22 +165,19 @@ func FormatTimestamp(event *events.Event, timestamp string) {
 		}
 	}()
 
-	if reflect.TypeOf(event.Fields[timestamp]).Kind() != reflect.Int64 {
-		if reflect.TypeOf(event.Fields[timestamp]).Kind() == reflect.String {
-			event.Fields[timestamp] = event.Fields[timestamp].(string)
-		} else {
-			event.Fields[timestamp] = ""
-		}
-
+	if reflect.TypeOf(event.Fields[timestamp]).Kind() == reflect.String {
+		event.Fields[timestamp] = event.Fields[timestamp].(string)
+	} else if reflect.TypeOf(event.Fields[timestamp]).Kind() == reflect.Int64 {
+		if len(strconv.FormatInt(event.Fields[timestamp].(int64), 10)) == 19 {		
+			if event.Type == "ValueMetric" || event.Type == "CounterEvent" || event.Type == "ContainerMetric" {
+				event.Fields[timestamp] = event.Fields[timestamp].(int64) / int64(time.Second)
+			} else {
+				event.Fields[timestamp] = time.Unix(0, event.Fields[timestamp].(int64)*int64(time.Nanosecond)).String()
+			}
+		} // if len(strconv.FormatInt(event.Fields[timestamp].(int64), 10)) == 19 -> leave it as is
+	} else {
+		event.Fields[timestamp] = ""
 	}
-	if reflect.TypeOf(event.Fields[timestamp]).Kind() == reflect.Int64 {
-		if len(strconv.FormatInt(event.Fields[timestamp].(int64), 10)) == 19 {
-			event.Fields[timestamp] = time.Unix(0, event.Fields[timestamp].(int64)*int64(time.Nanosecond)).String()
-		} else if len(strconv.FormatInt(event.Fields[timestamp].(int64), 10)) < 13 {
-			event.Fields[timestamp] = ""
-		}
-	}
-
 }
 
 func StringBuilder(event *events.Event, verboseLogMessages bool, includeOnlyMatchingFilter string, excludeAlwaysMatchingFilter string, customMetadata string) string {
@@ -225,7 +220,12 @@ func StringBuilder(event *events.Event, verboseLogMessages bool, includeOnlyMatc
 			eventNoVerbose := events.Event{
 				Fields: map[string]interface{}{
 					"timestamp":   event.Fields["timestamp"],
-					"cf_app_guid": event.Fields["cf_app_id"],
+					"cf_app_id": event.Fields["cf_app_id"],
+					"deployment": event.Fields["deployment"],
+					"job_index": event.Fields["job_index"],
+					"job": event.Fields["job"],
+					"ip": event.Fields["ip"],
+					"origin": event.Fields["origin"],
 				},
 				Msg:  event.Msg,
 				Type: event.Type,
@@ -242,65 +242,124 @@ func StringBuilder(event *events.Event, verboseLogMessages bool, includeOnlyMatc
 			}
 		}
 	case "ValueMetric":
-		message, err := json.Marshal(event)
-		if err == nil {
-			msg = message
+		FormatTimestamp(event, "timestamp")
+		deployment := event.Fields["deployment"]
+		jobIndex := event.Fields["job_index"]
+		ipString := event.Fields["ip"]
+		ip := ""
+		if ipString != nil && ipString != "" {
+			ip = fmt.Sprintf(" ip=%s", ipString)
 		}
+		job := event.Fields["job"]
+		origin := event.Fields["origin"]
+		eventUnit := event.Fields["unit"]
+		units := ""
+		if eventUnit != nil && eventUnit != "" {
+			units = fmt.Sprintf(" unit=%s", eventUnit)
+		}
+		msg = []byte(fmt.Sprintf("deployment=%s job_index=%s%s job=%s origin=%s metric=%s %s %f %d", 
+			deployment, jobIndex, ip, job, origin, event.Fields["name"], units, event.Fields["value"], event.Fields["timestamp"]))
 	case "CounterEvent":
-		message, err := json.Marshal(event)
-		if err == nil {
-			msg = message
+		FormatTimestamp(event, "timestamp")
+		deployment := event.Fields["deployment"]
+		jobIndex := event.Fields["job_index"]
+		ipString := event.Fields["ip"]
+		ip := ""
+		if ipString != nil && ipString != "" {
+			ip = fmt.Sprintf(" ip=%s", ipString)
 		}
+		job := event.Fields["job"]
+		origin := event.Fields["origin"]
+		name := event.Fields["name"]
+		timestamp := event.Fields["timestamp"]
+		msg = []byte(fmt.Sprintf("deployment=%s job_index=%s%s job=%s origin=%s metric=%s_total  %d %d\n" +
+			"deployment=%s job_index=%s%s job=%s origin=%s metric=%s_delta  %d %d", 
+			deployment, jobIndex, ip, job, origin, name, event.Fields["total"], timestamp,
+			deployment, jobIndex, ip, job, origin, name, event.Fields["delta"], timestamp))
 	case "Error":
 		message, err := json.Marshal(event)
 		if err == nil {
 			msg = message
 		}
 	case "ContainerMetric":
-		message, err := json.Marshal(event)
-		if err == nil {
-			msg = message
+		FormatTimestamp(event, "timestamp")
+		deployment := event.Fields["deployment"]
+		jobIndex := event.Fields["job_index"]
+		ipString := event.Fields["ip"]
+		ip := ""
+		if ipString != nil && ipString != "" {
+			ip = fmt.Sprintf(" ip=%s", ipString)
 		}
+		job := event.Fields["job"]
+		origin := event.Fields["origin"]
+		cfAppId := event.Fields["cf_app_id"]
+		instanceIndex := event.Fields["instance_index"]
+		timestamp := event.Fields["timestamp"]
+		msg = []byte(fmt.Sprintf("deployment=%s job_index=%s%s job=%s origin=%s cf_app_id=%s instance_index=%d metric=cpu_percentage  %f %d\n" +
+			"deployment=%s job_index=%s%s job=%s origin=%s cf_app_id=%s instance_index=%d metric=disk_bytes  %d %d\n" +
+			"deployment=%s job_index=%s%s job=%s origin=%s cf_app_id=%s instance_index=%d metric=disk_bytes_quota  %d %d\n" +
+			"deployment=%s job_index=%s%s job=%s origin=%s cf_app_id=%s instance_index=%d metric=memory_bytes  %d %d\n" +
+			"deployment=%s job_index=%s%s job=%s origin=%s cf_app_id=%s instance_index=%d metric=memory_bytes_quota  %d %d", 
+			deployment, jobIndex, ip, job, origin, cfAppId, instanceIndex, event.Fields["cpu_percentage"], timestamp,
+			deployment, jobIndex, ip, job, origin, cfAppId, instanceIndex, event.Fields["disk_bytes"], timestamp,
+			deployment, jobIndex, ip, job, origin, cfAppId, instanceIndex, event.Fields["disk_bytes_quota"], timestamp,
+			deployment, jobIndex, ip, job, origin, cfAppId, instanceIndex, event.Fields["memory_bytes"], timestamp,
+			deployment, jobIndex, ip, job, origin, cfAppId, instanceIndex, event.Fields["memory_bytes_quota"], timestamp))
 	}
 
 	buf := new(bytes.Buffer)
 	buf.Write(msg)
-	if WantedEvent(buf.String(), includeOnlyMatchingFilter, excludeAlwaysMatchingFilter) {
-		return buf.String() + "\n"
-	} else {
-		return ""
+	result := ""
+	for _, message := range strings.Split(buf.String(), "\n") {
+		if WantedEvent(message, includeOnlyMatchingFilter, excludeAlwaysMatchingFilter) {
+			result += message + "\n"			
+		}
 	}
-
+	return result
 }
 
 func (s *SumoLogicAppender) AppendLogs(buffer *SumoBuffer) {
-	buffer.logStringToSend.Write([]byte(StringBuilder(s.nozzleQueue.Pop(), s.verboseLogMessages, s.includeOnlyMatchingFilter, s.excludeAlwaysMatchingFilter, s.customMetadata)))
-	buffer.logEventsInCurrentBuffer++
-
+	event := s.nozzleQueue.Pop().CopyEvent()
+	eventString := StringBuilder(event, s.verboseLogMessages, s.includeOnlyMatchingFilter, s.excludeAlwaysMatchingFilter, s.customMetadata)
+	if event.Type == "ValueMetric" || event.Type == "CounterEvent" || event.Type == "ContainerMetric" {
+		buffer.metricStringToSend.Write([]byte(eventString))
+	} else {
+		buffer.logStringToSend.Write([]byte(eventString))
+	}
+	if eventString != "" {
+		newLines := strings.Count(eventString, "\n")
+		buffer.eventsInCurrentBuffer += newLines
+	}
 }
-func ParseCustomInput(customInput string) map[string]string {
+
+func ParseCustomInput(customInput string) map[string][]string {
 	cInputArray := strings.Split(customInput, ",")
-	customInputMap := make(map[string]string)
+	customInputMap := make(map[string][]string)
 	for i := 0; i < len(cInputArray); i++ {
-		customInputMap[strings.Split(cInputArray[i], ":")[0]] = strings.Split(cInputArray[i], ":")[1]
+		entry := strings.Split(cInputArray[i], ":")
+		customInputMap[entry[0]] = append(customInputMap[entry[0]], entry[1])
 	}
 	return customInputMap
 }
 
-func (s *SumoLogicAppender) SendToSumo(logStringToSend string) {
+func (s *SumoLogicAppender) SendToSumo(logStringToSend string, url string, isMetric bool) {
+	logging.Trace.Println("Attempting to send to Sumo Endpoint: " + url)
 	if logStringToSend != "" {
 		var buf bytes.Buffer
 		g := gzip.NewWriter(&buf)
 		g.Write([]byte(logStringToSend))
 		g.Close()
-		request, err := http.NewRequest("POST", s.url, &buf)
+		request, err := http.NewRequest("POST", url, &buf)
 		if err != nil {
 			logging.Error.Printf("http.NewRequest() error: %v\n", err)
 			return
 		}
 		request.Header.Add("Content-Encoding", "gzip")
 		request.Header.Add("X-Sumo-Client", "cloudfoundry-sumologic-nozzle v"+s.nozzleVersion)
-
+		
+		if isMetric {
+			request.Header.Add("Content-Type", "application/vnd.sumologic.carbon2")
+		}
 		if s.sumoName != "" {
 			request.Header.Add("X-Sumo-Name", s.sumoName)
 		}
@@ -324,13 +383,16 @@ func (s *SumoLogicAppender) SendToSumo(logStringToSend string) {
 			statusCode := 0
 			err := Retry(func(attempt int) (bool, error) {
 				var errRetry error
-				request, err := http.NewRequest("POST", s.url, &buf)
+				request, err := http.NewRequest("POST", url, &buf)
 				if err != nil {
 					logging.Error.Printf("http.NewRequest() error: %v\n", err)
 				}
 				request.Header.Add("Content-Encoding", "gzip")
 				request.Header.Add("X-Sumo-Client", "cloudfoundry-sumologic-nozzle v"+s.nozzleVersion)
-
+				
+				if isMetric {
+					request.Header.Add("Content-Type", "application/vnd.sumologic.carbon2")
+				}
 				if s.sumoName != "" {
 					request.Header.Add("X-Sumo-Name", s.sumoName)
 				}
@@ -346,6 +408,7 @@ func (s *SumoLogicAppender) SendToSumo(logStringToSend string) {
 					time.Sleep(100 * time.Millisecond)
 				}
 				response, errRetry = s.httpClient.Do(request)
+
 				if errRetry != nil {
 					logging.Error.Printf("http.Do() error: %v\n", errRetry)
 					logging.Info.Println("Waiting for 300 ms to retry after error")
@@ -381,7 +444,6 @@ func (s *SumoLogicAppender) SendToSumo(logStringToSend string) {
 			defer response.Body.Close()
 		}
 	}
-
 }
 
 //------------------Retry Logic Code-------------------------------

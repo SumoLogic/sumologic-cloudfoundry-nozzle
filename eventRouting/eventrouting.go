@@ -17,15 +17,15 @@ type EventRouting struct {
 	selectedEvents      map[string]bool
 	selectedEventsCount map[string]uint64
 	mutex               *sync.Mutex
-	queue               *eventQueue.Queue
+	queues              []*eventQueue.Queue
 }
 
-func NewEventRouting(caching caching.Caching, queue *eventQueue.Queue) *EventRouting {
+func NewEventRouting(caching caching.Caching, queues []*eventQueue.Queue) *EventRouting {
 	return &EventRouting{
 		CachingClient:       caching,
 		selectedEvents:      make(map[string]bool),
 		selectedEventsCount: make(map[string]uint64),
-		queue:               queue,
+		queues:              queues,
 		mutex:               &sync.Mutex{},
 	}
 }
@@ -71,7 +71,9 @@ func (e *EventRouting) RouteEvent(msg *events.Envelope) {
 			e.selectedEventsCount["ignored_app_message"]++
 		} else {
 			//Push the event to the queue
-			e.queue.Push(event)
+			for _, queue := range e.queues {
+				queue.Push(event)
+			}
 			e.selectedEventsCount[eventType.String()]++
 		}
 		e.mutex.Unlock()

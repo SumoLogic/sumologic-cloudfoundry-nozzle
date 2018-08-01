@@ -1,12 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"time"
 
-	"github.com/cloudfoundry-community/go-cfclient"
 	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/caching"
 	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/eventQueue"
 	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/eventRouting"
@@ -14,33 +14,27 @@ import (
 	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/firehoseclient"
 	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/logging"
 	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/sumoCFFirehose"
+	"github.com/cloudfoundry-community/go-cfclient"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
 var (
-	apiEndpoint                 = kingpin.Flag("api-endpoint", "URL to CF API Endpoint").Envar("API_ENDPOINT").String()
-	sumoEndpoint                = kingpin.Flag("sumo-endpoint", "SUMO-ENDPOINT Complete URL for the endpoint, copied from the Sumo Logic HTTP Source configuration").Envar("SUMO_ENDPOINT").String()
-	subscriptionId              = kingpin.Flag("subscription-id", "Cloud Foundry ID for the subscription.").Default("firehose").Envar("FIREHOSE_SUBSCRIPTION_ID").String()
-	user                        = kingpin.Flag("cloudfoundry-user", "Cloud Foundry User").Envar("CLOUDFOUNDRY_USER").String() //user created in CF, authorized to connect the firehose
-	password                    = kingpin.Flag("cloudfoundry-password", "Cloud Foundry Password").Envar("CLOUDFOUNDRY_PASSWORD").String()
-	keepAlive, errDt		    = time.ParseDuration("25s") //default Error,ContainerMetric,HttpStart,HttpStop,HttpStartStop,LogMessage,ValueMetric,CounterEvent
-	wantedEvents                = kingpin.Flag("events", fmt.Sprintf("Comma separated list of events you would like. Valid options are %s", eventRouting.GetListAuthorizedEventEvents())).Default("LogMessage").Envar("EVENTS").String()
-	boltDatabasePath            = "event.db"
-	skipSSLValidation           = kingpin.Flag("skip-ssl-validation", "Skip SSL validation (to allow things like self-signed certs). Do not set to true in production").Default("false").Envar("SKIP_SSL_VALIDATION").Bool()
-	tickerTime                  = kingpin.Flag("nozzle-polling-period", "How frequently this Nozzle polls the CF Firehose for data").Default("15s").Envar("NOZZLE_POLLING_PERIOD").Duration()
-	eventsBatchSize             = kingpin.Flag("log-events-batch-size", "When number of messages in the buffer is equal to this flag, send those to Sumo Logic").Default("500").Envar("LOG_EVENTS_BATCH_SIZE").Int()
-	sumoPostMinimumDelay        = kingpin.Flag("sumo-post-minimum-delay", "Minimum time between HTTP POST to Sumo Logic").Default("2000ms").Envar("SUMO_POST_MINIMUM_DELAY").Duration()
-	sumoCategory                = kingpin.Flag("sumo-category", "This value overrides the default 'Source Category' associated with the configured Sumo Logic HTTP Source").Default("").Envar("SUMO_CATEGORY").String()
-	sumoName                    = kingpin.Flag("sumo-name", "This value overrides the default 'Source Name' associated with the configured Sumo Logic HTTP Source").Default("").Envar("SUMO_NAME").String()
-	sumoHost                    = kingpin.Flag("sumo-host", "This value overrides the default 'Source Host' associated with the configured Sumo Logic HTTP Source").Default("").Envar("SUMO_HOST").String()
-	verboseLogMessages          = kingpin.Flag("verbose-log-messages", "Enable Verbose in 'LogMessage' Event. If this flag NOT present, the LogMessage will contain ONLY the fields: tiemstamp, cf_app_guid, Msg").Default("false").Envar("VERBOSE_LOG_MESSAGES").Bool()
-	customMetadata              = kingpin.Flag("custom-metadata", "Use this flag for addingCustom Metadata to the JSON (key1:value1,key2:value2, etc...)").Default("").Envar("CUSTOM_METADATA").String()
-	includeOnlyMatchingFilter   = kingpin.Flag("include-only-matching-filter", "Adds an 'Include only' filter to Events content (key1:value1,key2:value2, etc...)").Default("").Envar("INCLUDE_ONLY_MATCHING_FILTER").String()
-	excludeAlwaysMatchingFilter = kingpin.Flag("exclude-always-matching-filter", "Adds an 'Exclude always' filter to Events content (key1:value1,key2:value2, etc...)").Default("").Envar("EXCLUDE_ALWAYS_MATCHING_FILTER").String()
+	apiEndpoint         = kingpin.Flag("api_endpoint", "URL to CF API Endpoint").Envar("API_ENDPOINT").String()
+	sumoEndpointsString = kingpin.Flag("sumo_endpoints", "SUMO-ENDPOINTS Complete URLs for the endpoints, copied from the Sumo Logic HTTP Source configuration").Envar("SUMO_ENDPOINTS").String()
+	subscriptionId      = kingpin.Flag("subscription_id", "Cloud Foundry ID for the subscription.").Default("firehose").Envar("FIREHOSE_SUBSCRIPTION_ID").String()
+	user                = kingpin.Flag("cloudfoundry_user", "Cloud Foundry User").Envar("CLOUDFOUNDRY_USER").String() //user created in CF, authorized to connect the firehose
+	password            = kingpin.Flag("cloudfoundry_password", "Cloud Foundry Password").Envar("CLOUDFOUNDRY_PASSWORD").String()
+	keepAlive, errDt    = time.ParseDuration("25s") //default Error,ContainerMetric,HttpStart,HttpStop,HttpStartStop,LogMessage,ValueMetric,CounterEvent
+	wantedEvents        = kingpin.Flag("events", fmt.Sprintf("Comma separated list of events you would like. Valid options are %s", eventRouting.GetListAuthorizedEventEvents())).Default("LogMessage").Envar("EVENTS").String()
+	boltDatabasePath    = "event.db"
+	skipSSLValidation   = kingpin.Flag("skip_ssl_validation", "Skip SSL validation (to allow things like self-signed certs). Do not set to true in production").Default("false").Envar("SKIP_SSL_VALIDATION").Bool()
+	tickerTime          = kingpin.Flag("nozzle_polling_period", "How frequently this Nozzle polls the CF Firehose for data").Default("5m").Envar("NOZZLE_POLLING_PERIOD").Duration()
+	eventsBatchSize     = kingpin.Flag("log_events_batch_size", "When number of messages in the buffer is equal to this flag, send those to Sumo Logic").Default("500").Envar("LOG_EVENTS_BATCH_SIZE").Int()
+	verboseLogMessages  = kingpin.Flag("verbose_log_messages", "Enable Verbose in 'LogMessage' Event. If this flag NOT present, the LogMessage will contain ONLY the fields: tiemstamp, cf_app_guid, Msg").Default("true").Envar("VERBOSE_LOG_MESSAGES").Bool()
 )
 
 var (
-	version = "0.1.2"
+	version = "0.9.0"
 )
 
 func main() {
@@ -50,26 +44,24 @@ func main() {
 	kingpin.Version(version)
 	kingpin.Parse()
 
+	sumoConfigs := parseSumoConfigs(*sumoEndpointsString)
+	cfApi := parseCfApiFromVcapApplication(os.Getenv("VCAP_APPLICATION"))
+	if (*apiEndpoint == "") {
+		logging.Info.Println("Cloud Foundry API Endpoint was empty. Setting it to cf_api value: " + cfApi)
+		*apiEndpoint = cfApi
+	}
+
 	logging.Info.Println("Set Configurations:")
+	logging.Info.Println("cf_api: " + cfApi)
 	logging.Info.Println("CF API Endpoint: " + *apiEndpoint)
-	logging.Info.Println("Sumo Logic Endpoint: " + *sumoEndpoint)
 	logging.Info.Println("Cloud Foundry Nozzle Subscription ID: " + *subscriptionId)
 	logging.Info.Println("Cloud Foundry User: " + *user)
 	logging.Info.Println("Events Selected: " + *wantedEvents)
 	logging.Info.Printf("Skip SSL Validation: %v", *skipSSLValidation)
 	logging.Info.Printf("Nozzle Polling Period: %v", *tickerTime)
 	logging.Info.Printf("Log Events Batch Size: [%d]", *eventsBatchSize)
-	logging.Info.Printf("Sumo Logic HTTP Post Minimum Delay: %v", *sumoPostMinimumDelay)
-	if *sumoName != "" {
-		logging.Info.Println("Sumo Logic Name: " + *sumoName)
-	}
-	if *sumoHost != "" {
-		logging.Info.Println("Sumo Logic Host: " + *sumoHost)
-	}
-	if *sumoCategory != "" {
-		logging.Info.Println("Sumo Logic Category: " + *sumoCategory)
-	}
 	logging.Info.Printf("Verbose Log Messages: %v\n", *verboseLogMessages)
+	logging.Info.Printf("Sumo Logic Configurations: %v", sumoConfigs)
 	logging.Info.Println("Starting Sumo Logic Nozzle " + version)
 
 	if errDt != nil {
@@ -97,18 +89,21 @@ func main() {
 		cachingClient = caching.NewCachingEmpty()
 	}
 
-	logging.Info.Println("Creating queue")
-	queue := eventQueue.NewQueue(make([]*events.Event, 100))
-	loggingClientSumo := sumoCFFirehose.NewSumoLogicAppender(*sumoEndpoint, 5000, &queue, *eventsBatchSize, *sumoPostMinimumDelay, *sumoCategory, *sumoName, *sumoHost, *verboseLogMessages, *customMetadata, *includeOnlyMatchingFilter, *excludeAlwaysMatchingFilter, version)
-	go loggingClientSumo.Start() //multi
+	queues := make([]*eventQueue.Queue, len(sumoConfigs))
+	for i, sumoConfig := range sumoConfigs {
+		logging.Info.Println("Creating queue for endpoint: " + sumoConfig.Endpoint)
+		queue := eventQueue.NewQueue(make([]*events.Event, 100))
+		queues[i] = &queue
+		loggingClientSumo := sumoCFFirehose.NewSumoLogicAppender(sumoConfig.Endpoint, 5000, &queue, *eventsBatchSize, sumoConfig.PostMinimumDelay, sumoConfig.Category, sumoConfig.Name, sumoConfig.Host, *verboseLogMessages, sumoConfig.CustomMetadata, sumoConfig.IncludeOnlyMatchingFilter, sumoConfig.ExcludeAlwaysMatchingFilter, version)
+		go loggingClientSumo.Start() //multi
+	}
 
 	logging.Info.Println("Creating Events")
-	events := eventRouting.NewEventRouting(cachingClient, &queue)
+	events := eventRouting.NewEventRouting(cachingClient, queues)
 	err := events.SetupEventRouting(*wantedEvents)
 	if err != nil {
 		logging.Error.Fatal("Error setting up event routing: ", err)
 		os.Exit(1)
-
 	}
 
 	// Parse extra fields from cmd call
@@ -137,4 +132,69 @@ func main() {
 	logging.Info.Printf("FirehoseClient Error: %v", errFirehose)
 	defer cachingClient.Close()
 
+}
+
+type sumoConfigStruct struct {
+	Endpoint                    string        `json:"endpoint"`
+	PostMinimumDelay            time.Duration `json:"sumo_post_minimum_delay"`
+	Category                    string        `json:"sumo_category"`
+	Name                        string        `json:"sumo_name"`
+	Host                        string        `json:"sumo_host"`
+	CustomMetadata              string        `json:"custom_metadata"`
+	IncludeOnlyMatchingFilter   string        `json:"include_only_matching_filter"`
+	ExcludeAlwaysMatchingFilter string        `json:"exclude_always_matching_filter"`
+	GUID                        string        `json:"guid"`
+}
+
+func (s sumoConfigStruct) String() string {
+	return fmt.Sprintf("\n"+
+		"Sumo Logic Endpoint: %v\n"+
+		"Sumo Logic HTTP Post Minimum Delay: %v\n"+
+		"Sumo Logic Name: %v\n"+
+		"Sumo Logic Host: %v\n"+
+		"Sumo Logic Category: %v\n"+
+		"Custom Metadata: %v\n"+
+		"Include Only Matching Filter: %v\n"+
+		"Exclude Always Matching Filter: %v\n",
+		s.Endpoint,
+		s.PostMinimumDelay,
+		s.Name,
+		s.Host,
+		s.Category,
+		s.CustomMetadata,
+		s.IncludeOnlyMatchingFilter,
+		s.ExcludeAlwaysMatchingFilter)
+}
+
+func parseSumoConfigs(jsonString string) (target []sumoConfigStruct) {
+	res := []sumoConfigStruct{}
+	json.Unmarshal([]byte(jsonString), &res)
+	target = res
+	return
+}
+
+type vcapApplication struct {
+	ApplicationId      string `json:"application_id"`
+	ApplicationName    string `json:"application_name"`
+	ApplicationUris    string `json:"application_uris"`
+	ApplicationVersion string `json:"application_version"`
+	CfApi              string `json:"cf_api"`
+	Host               string `json:"host"`
+	Limits             string `json:"limits"`
+	Name               string `json:"name"`
+	SpaceId            string `json:"space_id"`
+	SpaceName          string `json:"space_name"`
+	Start              string `json:"start"`
+	StartedAt          string `json:"started_at"`
+	StartedAtTimestamp string `json:"started_at_timestamp"`
+	StateTimestamp     string `json:"state_timestamp"`
+	Uris               string `json:"uris"`
+	Users              string `json:"users"`
+	Version            string `json:"version"`
+}
+
+func parseCfApiFromVcapApplication(jsonString string) string {
+	res := vcapApplication{}
+	json.Unmarshal([]byte(jsonString), &res)
+	return res.CfApi
 }

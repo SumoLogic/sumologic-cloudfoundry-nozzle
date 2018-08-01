@@ -3,9 +3,9 @@ package events
 import (
 	"fmt"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/caching"
 	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/utils"
-	"github.com/Sirupsen/logrus"
 	"github.com/cloudfoundry/sonde-go/events"
 )
 
@@ -23,6 +23,7 @@ func HttpStart(msg *events.Envelope) *Event {
 		"instance_id":       httpStart.GetInstanceId(),
 		"instance_index":    httpStart.GetInstanceIndex(),
 		"method":            httpStart.GetMethod().String(),
+		"origin":            msg.GetOrigin,
 		"parent_request_id": utils.FormatUUID(httpStart.GetParentRequestId()),
 		"peer_type":         httpStart.GetPeerType().String(),
 		"request_id":        utils.FormatUUID(httpStart.GetRequestId()),
@@ -44,6 +45,7 @@ func HttpStop(msg *events.Envelope) *Event {
 	fields := logrus.Fields{
 		"cf_app_id":      utils.FormatUUID(httpStop.GetApplicationId()),
 		"content_length": httpStop.GetContentLength(),
+		"origin":         msg.GetOrigin,
 		"peer_type":      httpStop.GetPeerType().String(),
 		"request_id":     utils.FormatUUID(httpStop.GetRequestId()),
 		"status_code":    httpStop.GetStatusCode(),
@@ -66,6 +68,7 @@ func HttpStartStop(msg *events.Envelope) *Event {
 		"instance_id":     httpStartStop.GetInstanceId(),
 		"instance_index":  httpStartStop.GetInstanceIndex(),
 		"method":          httpStartStop.GetMethod().String(),
+		"origin":          msg.GetOrigin,
 		"peer_type":       httpStartStop.GetPeerType().String(),
 		"remote_addr":     httpStartStop.GetRemoteAddress(),
 		"request_id":      utils.FormatUUID(httpStartStop.GetRequestId()),
@@ -89,6 +92,7 @@ func LogMessage(msg *events.Envelope) *Event {
 
 	fields := logrus.Fields{
 		"cf_app_id":       logMessage.GetAppId(),
+		"origin":          msg.GetOrigin,
 		"timestamp":       logMessage.GetTimestamp(),
 		"source_type":     logMessage.GetSourceType(),
 		"message_type":    logMessage.GetMessageType().String(),
@@ -105,9 +109,14 @@ func ValueMetric(msg *events.Envelope) *Event {
 	valMetric := msg.GetValueMetric()
 
 	fields := logrus.Fields{
-		"name":  valMetric.GetName(),
-		"unit":  valMetric.GetUnit(),
-		"value": valMetric.GetValue(),
+		"deployment": msg.GetDeployment,
+		"ip":         msg.GetIp,
+		"job":        msg.GetJob,
+		"name":       valMetric.GetName(),
+		"origin":     msg.GetOrigin,
+		"timestamp":  msg.GetTimestamp(),
+		"unit":       valMetric.GetUnit(),
+		"value":      valMetric.GetValue(),
 	}
 
 	return &Event{
@@ -120,9 +129,14 @@ func CounterEvent(msg *events.Envelope) *Event {
 	counterEvent := msg.GetCounterEvent()
 
 	fields := logrus.Fields{
-		"name":  counterEvent.GetName(),
-		"delta": counterEvent.GetDelta(),
-		"total": counterEvent.GetTotal(),
+		"deployment": msg.GetDeployment,
+		"ip":         msg.GetIp,
+		"job":        msg.GetJob,
+		"name":       counterEvent.GetName(),
+		"origin":     msg.GetOrigin,
+		"timestamp":  msg.GetTimestamp(),
+		"delta":      counterEvent.GetDelta(),
+		"total":      counterEvent.GetTotal(),
 	}
 
 	return &Event{
@@ -135,8 +149,10 @@ func ErrorEvent(msg *events.Envelope) *Event {
 	errorEvent := msg.GetError()
 
 	fields := logrus.Fields{
-		"code":   errorEvent.GetCode(),
-		"source": errorEvent.GetSource(),
+		"origin":    msg.GetOrigin,
+		"timestamp": msg.GetTimestamp(),
+		"code":      errorEvent.GetCode(),
+		"source":    errorEvent.GetSource(),
 	}
 
 	return &Event{
@@ -149,7 +165,12 @@ func ContainerMetric(msg *events.Envelope) *Event {
 	containerMetric := msg.GetContainerMetric()
 
 	fields := logrus.Fields{
+		"deployment":         msg.GetDeployment,
+		"ip":                 msg.GetIp,
+		"job":                msg.GetJob,
+		"origin":             msg.GetOrigin,
 		"cf_app_id":          containerMetric.GetApplicationId(),
+		"timestamp":          msg.GetTimestamp(),
 		"cpu_percentage":     containerMetric.GetCpuPercentage(),
 		"disk_bytes":         containerMetric.GetDiskBytes(),
 		"disk_bytes_quota":   containerMetric.GetDiskBytesQuota(),
@@ -198,7 +219,6 @@ func (e *Event) AnnotateWithAppData(caching caching.Caching) {
 		}
 
 		e.Fields["cf_ignored_app"] = cf_ignored_app
-
 	}
 }
 
@@ -217,5 +237,18 @@ func (e *Event) AnnotateWithEnveloppeData(msg *events.Envelope) {
 	e.Fields["job"] = msg.GetJob()
 	e.Fields["job_index"] = msg.GetIndex()
 	e.Type = msg.GetEventType().String()
+}
 
+func (e *Event) CopyEvent() *Event {
+	fields := make(map[string]interface{})
+	
+	for k, v := range e.Fields {
+		fields[k] = v
+	}
+
+	return &Event{
+		Fields: fields,
+		Msg:  	e.Msg,
+		Type: 	e.Type,
+	}
 }
