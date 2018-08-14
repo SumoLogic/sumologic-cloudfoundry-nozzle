@@ -292,19 +292,24 @@ func StringBuilder(event *events.Event, verboseLogMessages bool, includeOnlyMatc
 		}
 		job := event.Fields["job"]
 		origin := event.Fields["origin"]
+		cfOrgName := event.Fields["cf_org_name"]
+		cfOrgId := event.Fields["cf_org_id"]
+		cfSpaceName := event.Fields["cf_space_name"]
+		cfSpaceId := event.Fields["cf_space_id"]
+		cfAppName := event.Fields["cf_app_name"]
 		cfAppId := event.Fields["cf_app_id"]
 		instanceIndex := event.Fields["instance_index"]
 		timestamp := event.Fields["timestamp"]
-		msg = []byte(fmt.Sprintf("deployment=%s job_index=%s%s job=%s origin=%s cf_app_id=%s instance_index=%d metric=cpu_percentage  %f %d\n" +
-			"deployment=%s job_index=%s%s job=%s origin=%s cf_app_id=%s instance_index=%d metric=disk_bytes  %d %d\n" +
-			"deployment=%s job_index=%s%s job=%s origin=%s cf_app_id=%s instance_index=%d metric=disk_bytes_quota  %d %d\n" +
-			"deployment=%s job_index=%s%s job=%s origin=%s cf_app_id=%s instance_index=%d metric=memory_bytes  %d %d\n" +
-			"deployment=%s job_index=%s%s job=%s origin=%s cf_app_id=%s instance_index=%d metric=memory_bytes_quota  %d %d", 
-			deployment, jobIndex, ip, job, origin, cfAppId, instanceIndex, event.Fields["cpu_percentage"], timestamp,
-			deployment, jobIndex, ip, job, origin, cfAppId, instanceIndex, event.Fields["disk_bytes"], timestamp,
-			deployment, jobIndex, ip, job, origin, cfAppId, instanceIndex, event.Fields["disk_bytes_quota"], timestamp,
-			deployment, jobIndex, ip, job, origin, cfAppId, instanceIndex, event.Fields["memory_bytes"], timestamp,
-			deployment, jobIndex, ip, job, origin, cfAppId, instanceIndex, event.Fields["memory_bytes_quota"], timestamp))
+		msg = []byte(fmt.Sprintf("deployment=%s job_index=%s%s job=%s origin=%s cf_org_name=%s cf_org_id=%s cf_space_name=%s cf_space_id=%s cf_app_name=%s cf_app_id=%s instance_index=%d metric=cpu_percentage  %f %d\n" +
+			"deployment=%s job_index=%s%s job=%s origin=%s cf_org_name=%s cf_org_id=%s cf_space_name=%s cf_space_id=%s cf_app_name=%s cf_app_id=%s instance_index=%d metric=disk_bytes  %d %d\n" +
+			"deployment=%s job_index=%s%s job=%s origin=%s cf_org_name=%s cf_org_id=%s cf_space_name=%s cf_space_id=%s cf_app_name=%s cf_app_id=%s instance_index=%d metric=disk_bytes_quota  %d %d\n" +
+			"deployment=%s job_index=%s%s job=%s origin=%s cf_org_name=%s cf_org_id=%s cf_space_name=%s cf_space_id=%s cf_app_name=%s cf_app_id=%s instance_index=%d metric=memory_bytes  %d %d\n" +
+			"deployment=%s job_index=%s%s job=%s origin=%s cf_org_name=%s cf_org_id=%s cf_space_name=%s cf_space_id=%s cf_app_name=%s cf_app_id=%s instance_index=%d metric=memory_bytes_quota  %d %d", 
+			deployment, jobIndex, ip, job, origin, cfOrgName, cfOrgId, cfSpaceName, cfSpaceId, cfAppName, cfAppId, instanceIndex, event.Fields["cpu_percentage"], timestamp,
+			deployment, jobIndex, ip, job, origin, cfOrgName, cfOrgId, cfSpaceName, cfSpaceId, cfAppName, cfAppId, instanceIndex, event.Fields["disk_bytes"], timestamp,
+			deployment, jobIndex, ip, job, origin, cfOrgName, cfOrgId, cfSpaceName, cfSpaceId, cfAppName, cfAppId, instanceIndex, event.Fields["disk_bytes_quota"], timestamp,
+			deployment, jobIndex, ip, job, origin, cfOrgName, cfOrgId, cfSpaceName, cfSpaceId, cfAppName, cfAppId, instanceIndex, event.Fields["memory_bytes"], timestamp,
+			deployment, jobIndex, ip, job, origin, cfOrgName, cfOrgId, cfSpaceName, cfSpaceId, cfAppName, cfAppId, instanceIndex, event.Fields["memory_bytes_quota"], timestamp))
 	}
 
 	buf := new(bytes.Buffer)
