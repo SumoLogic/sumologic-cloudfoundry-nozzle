@@ -1,6 +1,6 @@
 {
 	"ImportPath": "github.com/SumoLogic/sumologic-cloudfoundry-nozzle",
-	"GoVersion": "go1.7",
+	"GoVersion": "go1.9",
 	"GodepVersion": "v75",
 	"Deps": [
 		{
