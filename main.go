@@ -44,9 +44,12 @@ func main() {
 	kingpin.Version(version)
 	kingpin.Parse()
 
-	sumoConfigs := parseSumoConfigs(*sumoEndpointsString)
+	sumoConfigs, err := parseSumoConfigs(*sumoEndpointsString)
+	if err != nil {
+		logging.Error.Fatal("Error parsing sumo configs: ", err.Error())
+	}
 	cfApi := parseCfApiFromVcapApplication(os.Getenv("VCAP_APPLICATION"))
-	if (*apiEndpoint == "") {
+	if *apiEndpoint == "" {
 		logging.Info.Println("Cloud Foundry API Endpoint was empty. Setting it to cf_api value: " + cfApi)
 		*apiEndpoint = cfApi
 	}
@@ -78,7 +81,6 @@ func main() {
 
 	if errCfClient != nil {
 		logging.Error.Fatal("Error setting up CF Client: ", errCfClient)
-		os.Exit(1)
 	}
 
 	//Creating Caching
@@ -100,7 +102,7 @@ func main() {
 
 	logging.Info.Println("Creating Events")
 	events := eventRouting.NewEventRouting(cachingClient, queues)
-	err := events.SetupEventRouting(*wantedEvents)
+	err = events.SetupEventRouting(*wantedEvents)
 	if err != nil {
 		logging.Error.Fatal("Error setting up event routing: ", err)
 		os.Exit(1)
@@ -166,11 +168,13 @@ func (s sumoConfigStruct) String() string {
 		s.ExcludeAlwaysMatchingFilter)
 }
 
-func parseSumoConfigs(jsonString string) (target []sumoConfigStruct) {
+func parseSumoConfigs(jsonString string) ([]sumoConfigStruct, error) {
 	res := []sumoConfigStruct{}
-	json.Unmarshal([]byte(jsonString), &res)
-	target = res
-	return
+	err := json.Unmarshal([]byte(jsonString), &res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
 }
 
 type vcapApplication struct {
