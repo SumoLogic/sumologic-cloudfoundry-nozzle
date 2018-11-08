@@ -34,6 +34,8 @@ packages:
     command: sumologic-cloudfoundry-nozzle
     instances: 2
     path: sumo-logic-nozzle.zip
+    env:
+      GOPACKAGENAME: github.com/SumoLogic/sumologic-cloudfoundry-nozzle
   health_check: none
   needs_cf_credentials: true
 
