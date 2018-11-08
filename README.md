@@ -45,7 +45,7 @@ There are 3 ways to run this Nozzle:
 
 This is an example for running the Nozzle using the flags options described above:
 ```
-godep go run main.go --sumo_endpoints=[{"endpoint"="https://sumo-endpoint"}] --api_endpoint=https://api.endpoint --cloudfoundry_user=some_user --cloudfoundry_password=some_password --sumo_post_minimum_delay=200ms --sumo_host=123.123.123.0 --sumo_category=categoryTest --sumo_name=NameTestMETA --log_events_batch_size=200 --events=LogMessage, ValueMetric --verbose_log_messages
+go run main.go --sumo_endpoints=[{"endpoint":"https://sumo-endpoint"}] --api_endpoint=https://api.endpoint --cloudfoundry_user=some_user --cloudfoundry_password=some_password --sumo_post_minimum_delay=200ms --sumo_host=123.123.123.0 --sumo_category=categoryTest --sumo_name=NameTestMETA --log_events_batch_size=200 --events=LogMessage, ValueMetric --verbose_log_messages
 ```
 
 If everything goes right, you should see in your terminal the _Nozzle's Logs_ and, in the __Sumo Logic endpoint__ (defined in the _--sumo-endpoint_ flag) you should see the logs according the events you choose (_'LogMessage'_ and _'ValueMetric'_ with _verbose_ in this case).
@@ -82,7 +82,7 @@ All the events that contains a _**source-type:other**_ field OR an _**origin:app
 The correct way of using those flags will be something like this:
 
 ```
-godep go run main.go --sumo-endpoint=https://sumo-endpoint --api-endpoint=https://api.endpoint --skip-ssl-validation --cloudfoundry-user=some_user --cloudfoundry-password=some_password --sumo-post-minimum-delay=200ms --log-events-batch-size=200 --events=LogMessage, ValueMetric   --include-only-matching-filter=job:diego_cell,source_type:app --exclude-always-matching-filter=source_type:other,unit:count
+go run main.go --sumo-endpoint=[{"endpoint":"https://sumo-endpoint"}] --api-endpoint=https://api.endpoint --skip-ssl-validation --cloudfoundry-user=some_user --cloudfoundry-password=some_password --sumo-post-minimum-delay=200ms --log-events-batch-size=200 --events=LogMessage,ValueMetric   --include-only-matching-filter=job:diego_cell,source_type:app --exclude-always-matching-filter=source_type:other,unit:count
 ```
 
 
@@ -107,7 +107,7 @@ The tile configuration is handled in the 'tile.yml' file. (If you want to modify
 * Zip your entire code and place the zip file into the root directory of the project for which you wish to create a tile. For this tile use this command: (you should do this in a new terminal window)
 
     ```
-    zip -r sumo-logic-nozzle.zip bitbucket-pipelines.yml caching/ ci/ eventQueue/ eventRouting/ events/ firehoseclient/ glide.yaml glide.lock Godeps/ LICENSE logging/ main.go manifest.yml event.db Procfile sumoCFFirehose/ utils/ vendor/
+    zip -r sumo-logic-nozzle.zip bitbucket-pipelines.yml caching/ ci/ eventQueue/ eventRouting/ events/ firehoseclient/  LICENSE logging/ main.go  Procfile sumoCFFirehose/ utils/ vendor/
     ```
 ##### Step 4 - Build tile file
 * go to the 'tile-generator' terminal window and run

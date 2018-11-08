@@ -16,7 +16,7 @@ org_quota: 4096                       # Optional, memory quota in mb
 stemcell_criteria:
   os: ubuntu-trusty
   requires_cpi: false
-  version: '3363'
+  version: '3586'
 
 properties:
 - name: author
@@ -34,6 +34,8 @@ packages:
     command: sumologic-cloudfoundry-nozzle
     instances: 2
     path: sumo-logic-nozzle.zip
+    env:
+      GOPACKAGENAME: github.com/SumoLogic/sumologic-cloudfoundry-nozzle
   health_check: none
   needs_cf_credentials: true
 

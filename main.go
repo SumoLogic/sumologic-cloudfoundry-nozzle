@@ -25,6 +25,7 @@ var (
 	user                = kingpin.Flag("cloudfoundry_user", "Cloud Foundry User").Envar("CLOUDFOUNDRY_USER").String() //user created in CF, authorized to connect the firehose
 	password            = kingpin.Flag("cloudfoundry_password", "Cloud Foundry Password").Envar("CLOUDFOUNDRY_PASSWORD").String()
 	keepAlive, errDt    = time.ParseDuration("25s") //default Error,ContainerMetric,HttpStart,HttpStop,HttpStartStop,LogMessage,ValueMetric,CounterEvent
+	defaultPostMinimumDelay, _ = time.ParseDuration("2000ms") 
 	wantedEvents        = kingpin.Flag("events", fmt.Sprintf("Comma separated list of events you would like. Valid options are %s", eventRouting.GetListAuthorizedEventEvents())).Default("LogMessage").Envar("EVENTS").String()
 	boltDatabasePath    = "event.db"
 	skipSSLValidation   = kingpin.Flag("skip_ssl_validation", "Skip SSL validation (to allow things like self-signed certs). Do not set to true in production").Default("false").Envar("SKIP_SSL_VALIDATION").Bool()
@@ -34,7 +35,7 @@ var (
 )
 
 var (
-	version = "0.9.0"
+	version = "0.9.1"
 )
 
 func main() {
@@ -44,9 +45,12 @@ func main() {
 	kingpin.Version(version)
 	kingpin.Parse()
 
-	sumoConfigs := parseSumoConfigs(*sumoEndpointsString)
+	sumoConfigs, err := parseSumoConfigs(*sumoEndpointsString)
+	if err != nil {
+		logging.Error.Fatal("Error parsing sumo configs: ", err.Error())
+	}
 	cfApi := parseCfApiFromVcapApplication(os.Getenv("VCAP_APPLICATION"))
-	if (*apiEndpoint == "") {
+	if *apiEndpoint == "" {
 		logging.Info.Println("Cloud Foundry API Endpoint was empty. Setting it to cf_api value: " + cfApi)
 		*apiEndpoint = cfApi
 	}
@@ -78,7 +82,6 @@ func main() {
 
 	if errCfClient != nil {
 		logging.Error.Fatal("Error setting up CF Client: ", errCfClient)
-		os.Exit(1)
 	}
 
 	//Creating Caching
@@ -94,13 +97,20 @@ func main() {
 		logging.Info.Println("Creating queue for endpoint: " + sumoConfig.Endpoint)
 		queue := eventQueue.NewQueue(make([]*events.Event, 100))
 		queues[i] = &queue
-		loggingClientSumo := sumoCFFirehose.NewSumoLogicAppender(sumoConfig.Endpoint, 5000, &queue, *eventsBatchSize, sumoConfig.PostMinimumDelay, sumoConfig.Category, sumoConfig.Name, sumoConfig.Host, *verboseLogMessages, sumoConfig.CustomMetadata, sumoConfig.IncludeOnlyMatchingFilter, sumoConfig.ExcludeAlwaysMatchingFilter, version)
+
+		postMinDelay, errDPt    := time.ParseDuration(sumoConfig.PostMinimumDelay) 
+		if (errDPt != nil) {
+			logging.Info.Println("Error parsing PostMinimumDelay, got: "+ sumoConfig.PostMinimumDelay+ ". Will be using default value of 2s instead")
+			postMinDelay = defaultPostMinimumDelay
+		}
+		logging.Info.Printf("Using post minimum delay: %v\n",postMinDelay)
+		loggingClientSumo := sumoCFFirehose.NewSumoLogicAppender(sumoConfig.Endpoint, 5000, &queue, *eventsBatchSize, postMinDelay, sumoConfig.Category, sumoConfig.Name, sumoConfig.Host, *verboseLogMessages, sumoConfig.CustomMetadata, sumoConfig.IncludeOnlyMatchingFilter, sumoConfig.ExcludeAlwaysMatchingFilter, version)
 		go loggingClientSumo.Start() //multi
 	}
 
 	logging.Info.Println("Creating Events")
 	events := eventRouting.NewEventRouting(cachingClient, queues)
-	err := events.SetupEventRouting(*wantedEvents)
+	err = events.SetupEventRouting(*wantedEvents)
 	if err != nil {
 		logging.Error.Fatal("Error setting up event routing: ", err)
 		os.Exit(1)
@@ -136,7 +146,7 @@ func main() {
 
 type sumoConfigStruct struct {
 	Endpoint                    string        `json:"endpoint"`
-	PostMinimumDelay            time.Duration `json:"sumo_post_minimum_delay"`
+	PostMinimumDelay            string		  `json:"sumo_post_minimum_delay"`
 	Category                    string        `json:"sumo_category"`
 	Name                        string        `json:"sumo_name"`
 	Host                        string        `json:"sumo_host"`
@@ -166,11 +176,13 @@ func (s sumoConfigStruct) String() string {
 		s.ExcludeAlwaysMatchingFilter)
 }
 
-func parseSumoConfigs(jsonString string) (target []sumoConfigStruct) {
+func parseSumoConfigs(jsonString string) ([]sumoConfigStruct, error) {
 	res := []sumoConfigStruct{}
-	json.Unmarshal([]byte(jsonString), &res)
-	target = res
-	return
+	err := json.Unmarshal([]byte(jsonString), &res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
 }
 
 type vcapApplication struct {
