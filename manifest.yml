@@ -27,3 +27,4 @@ env:
   NOZZLE_POLLING_PERIOD: 15s
   LOG_EVENTS_BATCH_SIZE: 200
   VERBOSE_LOG_MESSAGES: true
+  GOPACKAGENAME: github.com/SumoLogic/sumologic-cloudfoundry-nozzle
