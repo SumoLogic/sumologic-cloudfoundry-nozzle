@@ -2,29 +2,20 @@
 
 
 [[projects]]
+  digest = "1:55388fd080150b9a072912f97b1f5891eb0b50df43401f8b75fb4273d3fec9fc"
+  name = "github.com/Masterminds/semver"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "c7af12943936e8c39859482e61f0574c2fd7fc75"
+  version = "v1.4.2"
+
+[[projects]]
   digest = "1:8eca1a18640cf3c015df3721cf4eaf9b470df7d50d2cc52e17065fddb3a4e8e7"
   name = "github.com/Sirupsen/logrus"
   packages = ["."]
   pruneopts = "UT"
   revision = "4b6ea7319e214d98c938f12692336f7ca9348d6b"
   version = "v0.10.0"
-
-[[projects]]
-  digest = "1:61cdb2158d939008f9e4db90ee2f00e1e157504ddbd413962a3d60894267ba46"
-  name = "github.com/SumoLogic/sumologic-cloudfoundry-nozzle"
-  packages = [
-    "caching",
-    "eventQueue",
-    "eventRouting",
-    "events",
-    "firehoseclient",
-    "logging",
-    "sumoCFFirehose",
-    "utils",
-  ]
-  pruneopts = "UT"
-  revision = "8951bb4d6db1a4d88ee7b20597b8b4853b1480d5"
-  version = "v0.9.0"
 
 [[projects]]
   digest = "1:03666a52875323b41f84782234fc8a5b28067305e96ab190f5147397cc6a40f9"
@@ -51,11 +42,19 @@
   revision = "4d30731e9122988d2012a9574c43f80f054a0d3b"
 
 [[projects]]
-  digest = "1:38c4989230d8fd89b8f72bb86a825487936fb3c3d81c281e8fc8c9c3e65cc127"
+  digest = "1:a01ce9b7dbca7c0210434fcb001880971d4fde87a52a3af0e077319dae045e3d"
   name = "github.com/cloudfoundry-community/go-cfclient"
   packages = ["."]
   pruneopts = "UT"
-  revision = "c783aa0efe78706e9d98ffc4a84f0d42cd322ac8"
+  revision = "22d02065b53fafff0657b4f53471f640c59e3164"
+
+[[projects]]
+  branch = "master"
+  digest = "1:ef4eaf0b9b15b3f5e5afaf6a52303c39d46a9c3b6d13d0d81e4b785002606692"
+  name = "github.com/cloudfoundry/gofileutils"
+  packages = ["fileutils"]
+  pruneopts = "UT"
+  revision = "4d0c80011a0f37da1711c184028bc40137cd45af"
 
 [[projects]]
   digest = "1:b2dd842253e733148777e8c5dad8bb89c54412179bd703b4a18ff69f7ee646ae"
@@ -165,6 +164,14 @@
   version = "v1.0"
 
 [[projects]]
+  digest = "1:cf31692c14422fa27c83a05292eb5cbe0fb2775972e8f1f8446a71549bd8980b"
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "ba968bfe8b2f7e042a574c888954fccecfa385b4"
+  version = "v0.8.1"
+
+[[projects]]
   digest = "1:08413c4235cad94a96c39e1e2f697789733c4a87d1fdf06b412d2cf2ba49826a"
   name = "github.com/pmezard/go-difflib"
   packages = ["difflib"]
@@ -180,21 +187,27 @@
   version = "v1.1.4"
 
 [[projects]]
-  digest = "1:0a65cfa1f7aefb37e6feab22ea198eb0c821d2de8e8ea1d63bec11fa27ad5eb0"
+  branch = "master"
+  digest = "1:f8b491a7c25030a895a0e579742d07136e6958e77ef2d46e769db8eec4e58fcd"
   name = "golang.org/x/net"
-  packages = ["context"]
+  packages = [
+    "context",
+    "context/ctxhttp",
+  ]
   pruneopts = "UT"
-  revision = "7dbad50ab5b31073856416cdcfeb2796d682f844"
+  revision = "ed066c81e75eba56dd9bd2139ade88125b855585"
 
 [[projects]]
-  digest = "1:3e091df0fc39c540e9c9fdafe8ed0e389b86cbf09e7bde5184e6fe4ed834a636"
+  branch = "master"
+  digest = "1:1c4d9557bf07117ad8ccdc82efa2d4746046280722378d76a576f52bf6ff80f0"
   name = "golang.org/x/oauth2"
   packages = [
     ".",
+    "clientcredentials",
     "internal",
   ]
   pruneopts = "UT"
-  revision = "2baa8a1b9338cf13d9eeb27696d761155fa480be"
+  revision = "5dab4167f31cbd76b407f1486c86b40748bc5073"
 
 [[projects]]
   digest = "1:69605d7eb5221321f44c296c948a11a603387e6e28034c72924e98d30343a023"
@@ -226,19 +239,19 @@
   revision = "8cccfa8eb2e3183254457fb1749b2667fbc364c7"
   version = "v2.1.11"
 
+[[projects]]
+  branch = "v2"
+  digest = "1:4d2e5a73dc1500038e504a8d78b986630e3626dc027bc030ba5c75da257cdb96"
+  name = "gopkg.in/yaml.v2"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "51d6538a90f86fe93ac480b35f37b2be17fef232"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
     "github.com/Sirupsen/logrus",
-    "github.com/SumoLogic/sumologic-cloudfoundry-nozzle/caching",
-    "github.com/SumoLogic/sumologic-cloudfoundry-nozzle/eventQueue",
-    "github.com/SumoLogic/sumologic-cloudfoundry-nozzle/eventRouting",
-    "github.com/SumoLogic/sumologic-cloudfoundry-nozzle/events",
-    "github.com/SumoLogic/sumologic-cloudfoundry-nozzle/firehoseclient",
-    "github.com/SumoLogic/sumologic-cloudfoundry-nozzle/logging",
-    "github.com/SumoLogic/sumologic-cloudfoundry-nozzle/sumoCFFirehose",
-    "github.com/SumoLogic/sumologic-cloudfoundry-nozzle/utils",
     "github.com/boltdb/bolt",
     "github.com/cloudfoundry-community/go-cfclient",
     "github.com/cloudfoundry/noaa/consumer",
