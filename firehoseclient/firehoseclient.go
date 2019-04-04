@@ -87,12 +87,14 @@ func (f *FirehoseNozzle) handleError(err error) {
 		logging.Trace.Println("Waiting for 60 seconds")
 		time.Sleep(60000 * time.Millisecond)
 		logging.Trace.Println("Trying to re-start firehose Client after fault...")
+		f.ResetCfClient()
 		f.Start()
 	default:
 		logging.Error.Printf("Error while reading from the firehose: %v", err)
 		logging.Trace.Println("Waiting for 60 seconds")
 		time.Sleep(60000 * time.Millisecond)
 		logging.Trace.Println("Trying to re-start firehose Client after fault...")
+		f.ResetCfClient()
 		f.Start()
 	}
 }
@@ -105,4 +107,24 @@ func (f *FirehoseNozzle) handleMessage(envelope *events.Envelope) {
 
 func (ct *CfClientTokenRefresh) RefreshAuthToken() (string, error) {
 	return ct.cfClient.GetToken()
+}
+
+func (f *FirehoseNozzle) ResetCfClient() {
+	logging.Info.Printf("Resetting cfClient...")
+	client, err := cfclient.NewClient(cleanCfConfig(f.cfClient.Config))
+	if err != nil {
+		logging.Error.Printf("Failed to reset cfClient: %v", err)
+		return
+	}
+	f.cfClient = client
+}
+
+func cleanCfConfig(config cfclient.Config) (*cfclient.Config) {
+	c := cfclient.Config{
+		ApiAddress:        config.ApiAddress,
+		Username:          config.Username,
+		Password:          config.Password,
+		SkipSslValidation: config.SkipSslValidation,
+	}
+	return &c
 }
