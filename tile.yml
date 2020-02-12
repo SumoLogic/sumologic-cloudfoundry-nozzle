@@ -55,6 +55,7 @@ forms:
         description: Complete URL for the endpoint, copied from the Sumo Logic HTTP Source configuration
       - name: sumo_post_minimum_delay
         type: string
+        configurable: true
         label: Sumo Logic Post Minimum Delay
         description: Minimum time between HTTP POST to Sumo Logic
         default: 2000ms
