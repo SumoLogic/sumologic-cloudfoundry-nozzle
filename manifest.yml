@@ -11,7 +11,7 @@ env:
         "sumo_category": "ExampleCategory",
         "sumo_name": "123.123.123.0",
         "sumo_host": "localhost1",
-        "custom_metadata": "ustomData1:customValue1,CustomData2:CustomValue2",
+        "custom_metadata": "CustomData1:customValue1,CustomData2:CustomValue2",
         "include_only_matching_filter": "",
         "exclude_always_matching_filter": ""
       },
