@@ -13,6 +13,7 @@ import (
 	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/events"
 	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/firehoseclient"
 	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/logging"
+
 	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/sumoCFFirehose"
 	"github.com/cloudfoundry-community/go-cfclient"
 	"gopkg.in/alecthomas/kingpin.v2"
@@ -35,7 +36,7 @@ var (
 )
 
 var (
-	version = "1.0.2"
+	version = "1.0.3"
 )
 
 func main() {
