@@ -158,6 +158,14 @@ func WantedEvent(event string, includeOnlyMatchingFilter string, excludeAlwaysMa
 	return true
 }
 
+func processEmptyMetricField(field string, replacement string) string {
+	if (field == "") {
+		return replacement
+	} else  {
+		return field
+	}
+}
+
 func FormatTimestamp(event *events.Event, timestamp string) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -251,7 +259,7 @@ func StringBuilder(event *events.Event, verboseLogMessages bool, includeOnlyMatc
 			ip = fmt.Sprintf(" ip=%s", ipString)
 		}
 		job := event.Fields["job"]
-		origin := event.Fields["origin"]
+		origin := processEmptyMetricField(fmt.Sprintf("%v",event.Fields["origin"]),"unknown")
 		eventUnit := event.Fields["unit"]
 		units := ""
 		if eventUnit != nil && eventUnit != "" {
@@ -269,7 +277,7 @@ func StringBuilder(event *events.Event, verboseLogMessages bool, includeOnlyMatc
 			ip = fmt.Sprintf(" ip=%s", ipString)
 		}
 		job := event.Fields["job"]
-		origin := event.Fields["origin"]
+		origin := processEmptyMetricField(fmt.Sprintf("%v", event.Fields["origin"]),"unknown")
 		name := event.Fields["name"]
 		timestamp := event.Fields["timestamp"]
 		msg = []byte(fmt.Sprintf("deployment=%s job_index=%s%s job=%s origin=%s metric=%s_total  %d %d\n" +
@@ -291,7 +299,7 @@ func StringBuilder(event *events.Event, verboseLogMessages bool, includeOnlyMatc
 			ip = fmt.Sprintf(" ip=%s", ipString)
 		}
 		job := event.Fields["job"]
-		origin := event.Fields["origin"]
+		origin := processEmptyMetricField(fmt.Sprintf("%v",event.Fields["origin"]),"unknown")
 		cfOrgName := event.Fields["cf_org_name"]
 		cfOrgId := event.Fields["cf_org_id"]
 		cfSpaceName := event.Fields["cf_space_name"]
@@ -382,7 +390,10 @@ func (s *SumoLogicAppender) SendToSumo(logStringToSend string, url string, isMet
 		response, err := s.httpClient.Do(request)
 
 		if (err != nil) || (response.StatusCode != 200 && response.StatusCode != 302 && response.StatusCode < 500) {
-			logging.Info.Println("Endpoint dropped the post send")
+			logging.Info.Printf("Endpoint dropped the post send with response code: %v \n",response.StatusCode)
+			if (isMetric) {
+				logging.Info.Printf("Load:\n %v\n",logStringToSend)
+			}
 			logging.Info.Println("Waiting for 300 ms to retry")
 			time.Sleep(300 * time.Millisecond)
 			statusCode := 0
