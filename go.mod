@@ -1,9 +1,5 @@
 module github.com/SumoLogic/sumologic-cloudfoundry-nozzle/v1.0.3
 
-//module example.com/SumoLogic/sumologic-cloudfoundry-nozzle
-
-//module SumoLogic/sumologic-cloudfoundry-nozzle
-
 go 1.13
 
 require (
