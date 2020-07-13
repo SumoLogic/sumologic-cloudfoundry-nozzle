@@ -5,12 +5,8 @@ github.com/Masterminds/semver v1.4.2 h1:WBLTQ37jOCzSLtXNdoo8bNM8876KhNqOKvrlGITg
 github.com/Masterminds/semver v1.4.2/go.mod h1:MB6lktGJrhw8PrUyiEoblNEGEQ+RzHPF078ddwwvV3Y=
 github.com/Sirupsen/logrus v0.10.0 h1:I5b9VTLOttchcwWCzzNfRDAW2EFGlEN49hyoyq6d2ZI=
 github.com/Sirupsen/logrus v0.10.0/go.mod h1:rmk17hk6i8ZSAJkSDa7nOxamrG+SP4P0mm+DAvExv4U=
-github.com/SumoLogic/sumologic-cloudfoundry-nozzle v1.0.0 h1:j0a1+g3YpFspd+uTbKbK8pC14mdE1UbEhxJogNw65Nw=
-github.com/SumoLogic/sumologic-cloudfoundry-nozzle v1.0.0/go.mod h1:Go4ceZWXTucygKqswm1kg+M/gup8/SOTj5R/VhYvhnA=
 github.com/SumoLogic/sumologic-cloudfoundry-nozzle v1.0.1-0.20200712194140-bd21ebd90fef h1:I2bzvJGf2oHIQoxSZmPE8uwjrSPextfBQRkrg2fG9lo=
 github.com/SumoLogic/sumologic-cloudfoundry-nozzle v1.0.1-0.20200712194140-bd21ebd90fef/go.mod h1:Go4ceZWXTucygKqswm1kg+M/gup8/SOTj5R/VhYvhnA=
-github.com/SumoLogic/sumologic-cloudfoundry-nozzle v1.0.1-0.20200712194239-9fb5c2fedd08 h1:8sJaDG8Rg4LdjJrdOEGBX9nCCEcbrQnmNXGPebj/ntc=
-github.com/SumoLogic/sumologic-cloudfoundry-nozzle v1.0.1-0.20200712194239-9fb5c2fedd08/go.mod h1:Go4ceZWXTucygKqswm1kg+M/gup8/SOTj5R/VhYvhnA=
 github.com/alecthomas/assert v0.0.0-20170929043011-405dbfeb8e38 h1:smF2tmSOzy2Mm+0dGI2AIUHY+w0BUc+4tn40djz7+6U=
 github.com/alecthomas/assert v0.0.0-20170929043011-405dbfeb8e38/go.mod h1:r7bzyVFMNntcxPZXK3/+KdruV1H5KSlyVY0gc+NgInI=
 github.com/alecthomas/colour v0.1.0 h1:nOE9rJm6dsZ66RGWYSFrXw461ZIt9A6+nHgL7FRrDUk=

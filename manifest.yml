@@ -2,29 +2,32 @@ applications:
 - name: sumologic-cloudfoundry-nozzle
   health-check-type: none
   no-route: true
-env:
-  API_ENDPOINT: ''
-  SUMO_ENDPOINTS: '[
-      {
-        "endpoint": "https://localhost1",
-        "sumo_post_minimum_delay": "200ms",
-        "sumo_category": "ExampleCategory",
-        "sumo_name": "123.123.123.0",
-        "sumo_host": "localhost1",
-        "custom_metadata": "CustomData1:customValue1,CustomData2:CustomValue2",
-        "include_only_matching_filter": "",
-        "exclude_always_matching_filter": ""
-      },
-      {
-        "endpoint": "https://localhost2"
-      }
-    ]'
-  FIREHOSE_SUBSCRIPTION_ID: cloudfoundry-sumologic-nozzle
-  CLOUDFOUNDRY_USER: firehose_user_authorized
-  CLOUDFOUNDRY_PASSWORD: password_firehose_user_authorized
-  EVENTS: LogMessage,ValueMetric,Error,ContainerMetric
-  SKIP_SSL_VALIDATION: true
-  NOZZLE_POLLING_PERIOD: 15s
-  LOG_EVENTS_BATCH_SIZE: 200
-  VERBOSE_LOG_MESSAGES: true
-  GOPACKAGENAME: github.com/SumoLogic/sumologic-cloudfoundry-nozzle
+  buildpacks:
+    - go_buildpack
+  env:
+    API_ENDPOINT: ''
+    GOVERSION: go1.13
+    SUMO_ENDPOINTS: '[
+        {
+          "endpoint": "https://localhost1",
+          "sumo_post_minimum_delay": "200ms",
+          "sumo_category": "ExampleCategory",
+          "sumo_name": "123.123.123.0",
+          "sumo_host": "localhost1",
+          "custom_metadata": "CustomData1:customValue1,CustomData2:CustomValue2",
+          "include_only_matching_filter": "",
+          "exclude_always_matching_filter": ""
+        },
+        {
+          "endpoint": ""
+        }
+      ]'
+    FIREHOSE_SUBSCRIPTION_ID: cloudfoundry-sumologic-nozzle
+    CLOUDFOUNDRY_USER: firehose_user_authorized
+    CLOUDFOUNDRY_PASSWORD: password_firehose_user_authorized
+    EVENTS: LogMessage,ValueMetric,Error,ContainerMetric
+    SKIP_SSL_VALIDATION: true
+    NOZZLE_POLLING_PERIOD: 15s
+    LOG_EVENTS_BATCH_SIZE: 200
+    VERBOSE_LOG_MESSAGES: true
+    GOPACKAGENAME: github.com/SumoLogic/sumologic-cloudfoundry-nozzle
