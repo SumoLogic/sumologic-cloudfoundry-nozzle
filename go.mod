@@ -1,10 +1,9 @@
-module github.com/SumoLogic/sumologic-cloudfoundry-nozzle/v1.0.3
+module github.com/SumoLogic/sumologic-cloudfoundry-nozzle
 
 go 1.13
 
 require (
 	github.com/Sirupsen/logrus v0.10.0
-	github.com/SumoLogic/sumologic-cloudfoundry-nozzle v1.0.1-0.20200712194140-bd21ebd90fef
 	github.com/alecthomas/assert v0.0.0-20170929043011-405dbfeb8e38 // indirect
 	github.com/alecthomas/colour v0.1.0 // indirect
 	github.com/alecthomas/repr v0.0.0-20200325044227-4184120f674c // indirect
