@@ -16,7 +16,7 @@ org_quota: 4096                       # Optional, memory quota in mb
 stemcell_criteria:
   os: ubuntu-xenial
   requires_cpi: false
-  version: '250'
+  version: '621'
 
 properties:
 - name: author
