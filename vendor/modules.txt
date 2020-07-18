@@ -2,15 +2,6 @@
 github.com/Masterminds/semver
 # github.com/Sirupsen/logrus v0.10.0
 github.com/Sirupsen/logrus
-# github.com/SumoLogic/sumologic-cloudfoundry-nozzle v1.0.1-0.20200712194140-bd21ebd90fef
-github.com/SumoLogic/sumologic-cloudfoundry-nozzle/caching
-github.com/SumoLogic/sumologic-cloudfoundry-nozzle/eventQueue
-github.com/SumoLogic/sumologic-cloudfoundry-nozzle/eventRouting
-github.com/SumoLogic/sumologic-cloudfoundry-nozzle/events
-github.com/SumoLogic/sumologic-cloudfoundry-nozzle/firehoseclient
-github.com/SumoLogic/sumologic-cloudfoundry-nozzle/logging
-github.com/SumoLogic/sumologic-cloudfoundry-nozzle/sumoCFFirehose
-github.com/SumoLogic/sumologic-cloudfoundry-nozzle/utils
 # github.com/alecthomas/template v0.0.0-20150530000104-b867cc6ab45c
 github.com/alecthomas/template
 github.com/alecthomas/template/parse
