@@ -10,7 +10,6 @@ usage: main [<flags>]
 Flags:  (See run command, in this document, for syntax of flags)
 --help                              Show context-sensitive help (also try --help-long and --help-man).
 --api_endpoint=                     CF API Endpoint
---sumo_endpoint=                    SUMO-ENDPOINT Complete URL for the endpoint, copied from the Sumo Logic HTTP Source configuration
 --subscription_id="firehose"        Cloud Foundry ID for the subscription.
 --cloudfoundry_user=                Cloud Foundry User
 --cloudfoundry_password=            Cloud Foundry Password
@@ -19,15 +18,21 @@ Flags:  (See run command, in this document, for syntax of flags)
 --skip_ssl_validation               Skip SSL validation (to allow things like self-signed certs). Do not set to true in production
 --nozzle_polling_period=15s         How frequently this Nozzle polls the CF Firehose for data
 --log_events_batch_size=500         When number of messages in the buffer is equal to this flag, send those to Sumo Logic
---sumo_post_minimum_delay=2000ms    Minimum time between HTTP POST to Sumo Logic
---sumo_category=""                  This value overrides the default 'Source Category' associated with the configured Sumo Logic HTTP Source
---sumo_name=""                      This value overrides the default 'Source Name' associated with the configured Sumo Logic HTTP Source
---sumo_host=""                      This value overrides the default 'Source Host' associated with the configured Sumo Logic HTTP Source
 --verbose_log_messages              Enable Verbose in 'LogMessage' Event. If this flag is NOT present, the LogMessage will contain ONLY the fields: tiemstamp, cf_app_guid, Msg
---custom_metadata=""                Use this flag for addingCustom Metadata to the JSON (key1:value1,key2:value2, etc...)
 --include_only_matching_filter=""   Adds an 'Include only' filter to Events content (key1:value1,key2:value2, etc...)
 --exclude_always_matching_filter="" Adds an 'Exclude always' filter to Events content (key1:value1,key2:value2, etc...)
 --version                           Show application version.
+
+```
+
+Also for each endpoint JSON object, the following keys can be defined: 
+```
+"sumo_endpoint":"<SUMO_HTTP_ENDPOINT>"                    SUMO-ENDPOINT Complete URL for the endpoint, copied from the Sumo Logic HTTP Source configuration
+"sumo_post_minimum_delay":"2000ms"    Minimum time between HTTP POST to Sumo Logic
+"sumo_category":""                  This value overrides the default 'Source Category' associated with the configured Sumo Logic HTTP Source
+"sumo_name":""                      This value overrides the default 'Source Name' associated with the configured Sumo Logic HTTP Source
+"sumo_host":""                      This value overrides the default 'Source Host' associated with the configured Sumo Logic HTTP Source
+"custom_metadata":""                Use this flag for addingCustom Metadata to the JSON (key1:value1,key2:value2, etc...)
 ```
 
 
@@ -41,7 +46,7 @@ There are 3 ways to run this Nozzle:
 
 This is an example for running the Nozzle using the flags options described above:
 ```
-go run main.go --sumo_endpoints='[{"endpoint":"https://sumo-endpoint","sumo_post_minimum_delay": "200ms", "include_only_matching_filter": "","exclude_always_matching_filter": " }]' --api_endpoint=https://api.endpoint --cloudfoundry_user=some_user --cloudfoundry_password=some_password --sumo_host=123.123.123.0 --sumo_category=categoryTest --sumo_name=NameTestMETA --log_events_batch_size=200 --events=LogMessage,ValueMetric,CountainerMetric,CounterEvent,Error,HttpStart,HttpStop --verbose_log_messages
+go run main.go --sumo_endpoints='[{"endpoint":"https://sumo-endpoint","sumo_post_minimum_delay": "200ms","sumo_host":"123.123.123.0", "sumo_category":"categoryTest", "sumo_name":"NameTestMETA", "include_only_matching_filter": "","exclude_always_matching_filter": "" }]' --api_endpoint=https://api.endpoint --cloudfoundry_user=some_user --cloudfoundry_password=some_password  --log_events_batch_size=200 --events=LogMessage,ValueMetric,CountainerMetric,CounterEvent,Error,HttpStart,HttpStop --verbose_log_messages
 ```
 
 If everything goes right, you should see in your terminal the _Nozzle's Logs_ and, in the __Sumo Logic endpoint__ (defined in the _--sumo-endpoint_ flag) you should see the logs according the events you choose (_'LogMessage'_ and _'ValueMetric'_ with _verbose_ in this case).
@@ -78,7 +83,7 @@ All the events that contains a _**source-type:other**_ field OR an _**origin:app
 The correct way of using those flags will be something like this:
 
 ```
-go run main.go --sumo-endpoint=[{"endpoint":"https://sumo-endpoint"}] --api-endpoint=https://api.endpoint --skip-ssl-validation --cloudfoundry-user=some_user --cloudfoundry-password=some_password --sumo-post-minimum-delay=200ms --log-events-batch-size=200 --events=LogMessage,ValueMetric   --include-only-matching-filter=job:diego_cell,source_type:app --exclude-always-matching-filter=source_type:other,unit:count
+go run main.go --sumo-endpoint=[{"endpoint":"https://sumo-endpoint","sumo-post-minimum-delay":"200ms","include-only-matching-filter":"job:diego_cell,source_type:app","exclude-always-matching-filter":"source_type:other,unit:count"}] --api-endpoint=https://api.endpoint --skip-ssl-validation --cloudfoundry-user=some_user --cloudfoundry-password=some_password  --log-events-batch-size=200 --events=LogMessage,ValueMetric   
 ```
 
 
