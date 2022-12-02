@@ -56,7 +56,7 @@ func (c *CachingBolt) PerformPoollingCaching(tickerTime time.Duration) {
 			apps = c.GetAllApp()
 		}
 	}()
-
+	log.Printf("Apps cached:%d\n",len(apps))
 }
 
 func (c *CachingBolt) fillDatabase(listApps []App) {
