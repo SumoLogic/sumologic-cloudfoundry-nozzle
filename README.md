@@ -1,5 +1,5 @@
 # sumologic-cloudfoundry-nozzle
-===============================
+
 This Nozzle aggregates all the events from the _Firehose_ feature in Cloud Foundry towards Sumo Logic
 
 ### Options of use
