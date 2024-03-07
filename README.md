@@ -46,7 +46,7 @@ There are 3 ways to run this Nozzle:
 
 This is an example for running the Nozzle using the flags options described above:
 ```
-go run main.go --sumo_endpoints='[{"endpoint":"https://sumo-endpoint","sumo_post_minimum_delay": "200ms","sumo_host":"123.123.123.0", "sumo_category":"categoryTest", "sumo_name":"NameTestMETA", "include_only_matching_filter": "","exclude_always_matching_filter": "" }]' --api_endpoint=https://api.endpoint --cloudfoundry_user=some_user --cloudfoundry_password=some_password  --log_events_batch_size=200 --events=LogMessage,ValueMetric,CountainerMetric,CounterEvent,Error,HttpStart,HttpStop --verbose_log_messages
+go run main.go --sumo_endpoints='[{"endpoint":"https://sumo-endpoint","sumo_post_minimum_delay": "200ms","sumo_host":"123.123.123.0", "sumo_category":"categoryTest", "sumo_name":"NameTestMETA", "include_only_matching_filter": "","exclude_always_matching_filter": "" }]' --api_endpoint=https://api.endpoint --cloudfoundry_user=some_user --cloudfoundry_password=some_password  --log_events_batch_size=200 --events=LogMessage,ValueMetric,ContainerMetric,CounterEvent,Error,HttpStart,HttpStop --verbose_log_messages
 ```
 
 If everything goes right, you should see in your terminal the _Nozzle's Logs_ and, in the __Sumo Logic endpoint__ (defined in the _--sumo-endpoint_ flag) you should see the logs according the events you choose (_'LogMessage'_ and _'ValueMetric'_ with _verbose_ in this case).
