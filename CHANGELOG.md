@@ -2,6 +2,25 @@
 title: Release Notes
 owner: Sumo Logic 
 ---
+
+## v1.0.5
+
+**Release Date:** March 08, 2024
+
+Features included in this release:
+
+* Added support for Tanzu Application Service 4.0, 5.0 with Tanzu Operations Manager 3.0.x
+* Updated product logo image
+* Supported stemcell Ubuntu Jammy 
+
+## v1.0.4
+
+**Release Date:** Dec 05, 2022
+
+Features included in this release:
+
+* Added support for Tanzu Application Service 3.0.1 and Tanzu Operations Manager 3.0.0
+
 ## v1.0.3
 
 **Release Date:** July 20, 2020
