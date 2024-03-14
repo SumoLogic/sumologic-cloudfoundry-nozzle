@@ -22,17 +22,10 @@ github.com/alecthomas/units
 # github.com/boltdb/bolt v0.0.0-20150318161107-4d30731e9122
 ## explicit
 github.com/boltdb/bolt
-# github.com/cloudfoundry-community/go-cfclient v0.0.0-20190114203233-22d02065b53f
-## explicit
+# github.com/cloudfoundry-community/go-cfclient v0.0.0-20220803221820-5e81c204bd31
+## explicit; go 1.15
 github.com/cloudfoundry-community/go-cfclient
-# github.com/cloudfoundry/gofileutils v0.0.0-20170111115228-4d0c80011a0f
-## explicit
-github.com/cloudfoundry/gofileutils/fileutils
-# github.com/cloudfoundry/gosteno v0.0.0-20150423193413-0c8581caea35
-## explicit
-# github.com/cloudfoundry/loggregatorlib v0.0.0-20170823162133-36eddf15ef12
-## explicit
-# github.com/cloudfoundry/noaa v0.0.0-20160723201743-0ca0d30d65c7
+# github.com/cloudfoundry/noaa v2.1.1-0.20190110210640-5ce49363dfa6+incompatible
 ## explicit
 github.com/cloudfoundry/noaa
 github.com/cloudfoundry/noaa/consumer
@@ -46,13 +39,17 @@ github.com/cloudfoundry/sonde-go/events
 github.com/davecgh/go-spew/spew
 # github.com/elazarl/goproxy v0.0.0-20200710112657-153946a5f232
 ## explicit
-# github.com/gogo/protobuf v0.0.0-20160804155430-a4cceea7a401
+# github.com/elazarl/goproxy/ext v0.0.0-20190711103511-473e67f1d7d2
 ## explicit
+# github.com/fsnotify/fsnotify v1.7.0
+## explicit; go 1.17
+# github.com/gogo/protobuf v1.3.2
+## explicit; go 1.15
 github.com/gogo/protobuf/gogoproto
 github.com/gogo/protobuf/proto
 github.com/gogo/protobuf/protoc-gen-gogo/descriptor
-# github.com/golang/protobuf v1.2.0
-## explicit
+# github.com/golang/protobuf v1.5.2
+## explicit; go 1.9
 github.com/golang/protobuf/proto
 # github.com/gorilla/websocket v1.4.1
 ## explicit; go 1.12
@@ -64,6 +61,8 @@ github.com/hpcloud/tail/ratelimiter
 github.com/hpcloud/tail/util
 github.com/hpcloud/tail/watch
 github.com/hpcloud/tail/winfile
+# github.com/kr/pretty v0.1.0
+## explicit
 # github.com/mailru/easyjson v0.0.0-20161103141812-159cdb893c98
 ## explicit
 github.com/mailru/easyjson
@@ -117,23 +116,23 @@ github.com/pmezard/go-difflib/difflib
 # github.com/stretchr/testify v1.4.0
 ## explicit
 github.com/stretchr/testify/assert
-# golang.org/x/net v0.0.0-20190119204137-ed066c81e75e
-## explicit
+# golang.org/x/net v0.0.0-20220425223048-2871e0cb64e4
+## explicit; go 1.17
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
 golang.org/x/net/html
 golang.org/x/net/html/atom
 golang.org/x/net/html/charset
-# golang.org/x/oauth2 v0.0.0-20190115181402-5dab4167f31c
+# golang.org/x/oauth2 v0.0.0-20190130055435-99b60b757ec1
 ## explicit; go 1.11
 golang.org/x/oauth2
 golang.org/x/oauth2/clientcredentials
 golang.org/x/oauth2/internal
-# golang.org/x/sys v0.0.0-20200116001909-b77594299b42
-## explicit; go 1.12
+# golang.org/x/sys v0.4.0
+## explicit; go 1.17
 golang.org/x/sys/unix
-# golang.org/x/text v0.3.0
-## explicit
+# golang.org/x/text v0.3.7
+## explicit; go 1.17
 golang.org/x/text/encoding
 golang.org/x/text/encoding/charmap
 golang.org/x/text/encoding/htmlindex
@@ -144,6 +143,8 @@ golang.org/x/text/encoding/korean
 golang.org/x/text/encoding/simplifiedchinese
 golang.org/x/text/encoding/traditionalchinese
 golang.org/x/text/encoding/unicode
+golang.org/x/text/internal/language
+golang.org/x/text/internal/language/compact
 golang.org/x/text/internal/tag
 golang.org/x/text/internal/utf8internal
 golang.org/x/text/language
@@ -158,6 +159,35 @@ google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
+# google.golang.org/protobuf v1.28.0
+## explicit; go 1.11
+google.golang.org/protobuf/encoding/prototext
+google.golang.org/protobuf/encoding/protowire
+google.golang.org/protobuf/internal/descfmt
+google.golang.org/protobuf/internal/descopts
+google.golang.org/protobuf/internal/detrand
+google.golang.org/protobuf/internal/encoding/defval
+google.golang.org/protobuf/internal/encoding/messageset
+google.golang.org/protobuf/internal/encoding/tag
+google.golang.org/protobuf/internal/encoding/text
+google.golang.org/protobuf/internal/errors
+google.golang.org/protobuf/internal/filedesc
+google.golang.org/protobuf/internal/filetype
+google.golang.org/protobuf/internal/flags
+google.golang.org/protobuf/internal/genid
+google.golang.org/protobuf/internal/impl
+google.golang.org/protobuf/internal/order
+google.golang.org/protobuf/internal/pragma
+google.golang.org/protobuf/internal/set
+google.golang.org/protobuf/internal/strs
+google.golang.org/protobuf/internal/version
+google.golang.org/protobuf/proto
+google.golang.org/protobuf/reflect/protodesc
+google.golang.org/protobuf/reflect/protoreflect
+google.golang.org/protobuf/reflect/protoregistry
+google.golang.org/protobuf/runtime/protoiface
+google.golang.org/protobuf/runtime/protoimpl
+google.golang.org/protobuf/types/descriptorpb
 # gopkg.in/alecthomas/kingpin.v2 v2.1.11
 ## explicit
 gopkg.in/alecthomas/kingpin.v2
@@ -169,6 +199,6 @@ gopkg.in/fsnotify.v1
 # gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7
 ## explicit
 gopkg.in/tomb.v1
-# gopkg.in/yaml.v2 v2.2.4
-## explicit
+# gopkg.in/yaml.v2 v2.4.0
+## explicit; go 1.15
 gopkg.in/yaml.v2
