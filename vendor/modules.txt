@@ -19,7 +19,7 @@ github.com/alecthomas/template/parse
 github.com/alecthomas/units
 # github.com/apoydence/eachers v0.0.0-20181020210610-23942921fe77
 ## explicit
-# github.com/boltdb/bolt v0.0.0-20150318161107-4d30731e9122
+# github.com/boltdb/bolt v1.3.1
 ## explicit
 github.com/boltdb/bolt
 # github.com/cloudfoundry-community/go-cfclient v0.0.0-20220803221820-5e81c204bd31

@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/Sirupsen/logrus v0.10.0
-	github.com/boltdb/bolt v0.0.0-20150318161107-4d30731e9122
+	github.com/boltdb/bolt v1.3.1
 	github.com/cloudfoundry-community/go-cfclient v0.0.0-20220803221820-5e81c204bd31
 	github.com/cloudfoundry/noaa v2.1.1-0.20190110210640-5ce49363dfa6+incompatible
 	github.com/cloudfoundry/sonde-go v0.0.0-20160804000546-81c3f6be579c
