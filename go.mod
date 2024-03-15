@@ -3,7 +3,6 @@ module github.com/SumoLogic/sumologic-cloudfoundry-nozzle
 go 1.20
 
 require (
-	github.com/Sirupsen/logrus v0.10.0
 	github.com/boltdb/bolt v1.3.1
 	github.com/cloudfoundry-community/go-cfclient v0.0.0-20220803221820-5e81c204bd31
 	github.com/cloudfoundry/noaa v2.1.1-0.20190110210640-5ce49363dfa6+incompatible

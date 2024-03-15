@@ -1,9 +1,6 @@
 # github.com/Masterminds/semver v1.4.2
 ## explicit
 github.com/Masterminds/semver
-# github.com/Sirupsen/logrus v0.10.0
-## explicit
-github.com/Sirupsen/logrus
 # github.com/alecthomas/assert v0.0.0-20170929043011-405dbfeb8e38
 ## explicit
 # github.com/alecthomas/colour v0.1.0
