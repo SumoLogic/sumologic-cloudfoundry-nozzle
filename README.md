@@ -35,6 +35,15 @@ Also for each endpoint JSON object, the following keys can be defined:
 "custom_metadata":""                Use this flag for addingCustom Metadata to the JSON (key1:value1,key2:value2, etc...)
 ```
 
+### Supported Event type
+| Firehose event type | Description                                                                                    |
+|---------------------|------------------------------------------------------------------------------------------------|
+| **HttpStartStop**   | An HttpStartStop event comprehensively represents the lifecycle of an HTTP request             |
+| **LogMessage**      | A Log messages emitted by the application to either stderr or stdout.                          |
+| **ContainerMetric** | A ContainerMetrics capture resource utilization for applications running in Garden containers. |
+| **CounterEvent**    | A CounterEvents to represent incrementing counters.                                            |
+| **ValueMetric**     | A ValueMetrics to represent the instantaneous value of a metric.                               |
+| **Error**           | An Error event signifies an error occurring within the originating process.                    |
 
 There are 3 ways to run this Nozzle:
 
@@ -83,7 +92,7 @@ All the events that contains a _**source-type:other**_ field OR an _**origin:app
 The correct way of using those flags will be something like this:
 
 ```
-go run main.go --sumo-endpoint=[{"endpoint":"https://sumo-endpoint","sumo-post-minimum-delay":"200ms","include-only-matching-filter":"job:diego_cell,source_type:app","exclude-always-matching-filter":"source_type:other,unit:count"}] --api-endpoint=https://api.endpoint --skip-ssl-validation --cloudfoundry-user=some_user --cloudfoundry-password=some_password  --log-events-batch-size=200 --events=LogMessage,ValueMetric   
+go run main.go --sumo-endpoint=[{"endpoint":"https://sumo-endpoint","sumo_post_minimum_delay":"200ms","include_only_matching_filter":"job:diego_cell,source_type:app","exclude_always_matching_filter":"source_type:other,unit:count"}] --api-endpoint=https://api.endpoint --skip-ssl-validation --cloudfoundry-user=some_user --cloudfoundry-password=some_password  --log-events-batch-size=200 --events=LogMessage,ValueMetric   
 ```
 
 
