@@ -56,7 +56,7 @@ func (c *CachingBolt) PerformPoollingCaching(tickerTime time.Duration) {
 			apps = c.GetAllApp()
 		}
 	}()
-	log.Printf("Apps cached:%d\n",len(apps))
+	log.Printf("Apps cached:%d\n", len(apps))
 }
 
 func (c *CachingBolt) fillDatabase(listApps []App) {
@@ -87,6 +87,7 @@ func (c *CachingBolt) GetAppByGuid(appGuid string) []App {
 	var apps []App
 	app, err := c.GcfClient.AppByGuid(appGuid)
 	if err != nil {
+		log.Printf("Error in GetAppByGuid! %s\n", err)
 		return apps
 	}
 
@@ -115,6 +116,7 @@ func (c *CachingBolt) GetAllApp() []App {
 	}()
 	cfApps, err := c.GcfClient.ListApps()
 	if err != nil {
+		log.Printf("Error in GetAllApp! %s\n", err)
 		return apps
 	}
 	for _, app := range cfApps {
@@ -130,7 +132,7 @@ func (c *CachingBolt) GetAllApp() []App {
 		})
 	}
 	c.fillDatabase(apps)
-	//fmt.Printf("Found [%d] Apps!", len(apps))
+	log.Printf("Found [%d] Apps!\n", len(apps))
 
 	return apps
 }

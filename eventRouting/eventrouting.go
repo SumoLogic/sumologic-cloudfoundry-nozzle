@@ -37,7 +37,6 @@ func (e *EventRouting) GetSelectedEvents() map[string]bool {
 func (e *EventRouting) RouteEvent(msg *events.Envelope) {
 
 	eventType := msg.GetEventType()
-
 	if e.selectedEvents[eventType.String()] {
 		var event *fevents.Event
 		switch eventType {

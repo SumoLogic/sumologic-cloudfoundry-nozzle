@@ -3,6 +3,9 @@ release/
 event.db
 tile-history.yml
 sumo-logic-nozzle.zip
+# Pycharm
 .idea
+=======
 sumologic-cloudfoundry-nozzle
 sumologic_cloudfoundry_nozzle
+

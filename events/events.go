@@ -3,7 +3,6 @@ package events
 import (
 	"fmt"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/caching"
 	"github.com/SumoLogic/sumologic-cloudfoundry-nozzle/utils"
 	"github.com/cloudfoundry/sonde-go/events"
@@ -15,10 +14,14 @@ type Event struct {
 	Type   string
 }
 
+// Fields type
+type Fields map[string]interface{}
+
+// HttpStart event type is retained for backward compatibility, despite being deprecated.
 func HttpStart(msg *events.Envelope) *Event {
 	httpStart := msg.GetHttpStart()
 
-	fields := logrus.Fields{
+	fields := Fields{
 		"cf_app_id":         utils.FormatUUID(httpStart.GetApplicationId()),
 		"instance_id":       httpStart.GetInstanceId(),
 		"instance_index":    httpStart.GetInstanceIndex(),
@@ -39,10 +42,11 @@ func HttpStart(msg *events.Envelope) *Event {
 	}
 }
 
+// HttpStop event type is retained for backward compatibility, despite being deprecated.
 func HttpStop(msg *events.Envelope) *Event {
 	httpStop := msg.GetHttpStop()
 
-	fields := logrus.Fields{
+	fields := Fields{
 		"cf_app_id":      utils.FormatUUID(httpStop.GetApplicationId()),
 		"content_length": httpStop.GetContentLength(),
 		"origin":         msg.GetOrigin,
@@ -62,7 +66,7 @@ func HttpStop(msg *events.Envelope) *Event {
 func HttpStartStop(msg *events.Envelope) *Event {
 	httpStartStop := msg.GetHttpStartStop()
 
-	fields := logrus.Fields{
+	fields := Fields{
 		"cf_app_id":       utils.FormatUUID(httpStartStop.GetApplicationId()),
 		"content_length":  httpStartStop.GetContentLength(),
 		"instance_id":     httpStartStop.GetInstanceId(),
@@ -90,7 +94,7 @@ func HttpStartStop(msg *events.Envelope) *Event {
 func LogMessage(msg *events.Envelope) *Event {
 	logMessage := msg.GetLogMessage()
 
-	fields := logrus.Fields{
+	fields := Fields{
 		"cf_app_id":       logMessage.GetAppId(),
 		"origin":          msg.GetOrigin,
 		"timestamp":       logMessage.GetTimestamp(),
@@ -108,7 +112,7 @@ func LogMessage(msg *events.Envelope) *Event {
 func ValueMetric(msg *events.Envelope) *Event {
 	valMetric := msg.GetValueMetric()
 
-	fields := logrus.Fields{
+	fields := Fields{
 		"deployment": msg.GetDeployment,
 		"ip":         msg.GetIp,
 		"job":        msg.GetJob,
@@ -128,7 +132,7 @@ func ValueMetric(msg *events.Envelope) *Event {
 func CounterEvent(msg *events.Envelope) *Event {
 	counterEvent := msg.GetCounterEvent()
 
-	fields := logrus.Fields{
+	fields := Fields{
 		"deployment": msg.GetDeployment,
 		"ip":         msg.GetIp,
 		"job":        msg.GetJob,
@@ -148,7 +152,7 @@ func CounterEvent(msg *events.Envelope) *Event {
 func ErrorEvent(msg *events.Envelope) *Event {
 	errorEvent := msg.GetError()
 
-	fields := logrus.Fields{
+	fields := Fields{
 		"origin":    msg.GetOrigin,
 		"timestamp": msg.GetTimestamp(),
 		"code":      errorEvent.GetCode(),
@@ -164,7 +168,7 @@ func ErrorEvent(msg *events.Envelope) *Event {
 func ContainerMetric(msg *events.Envelope) *Event {
 	containerMetric := msg.GetContainerMetric()
 
-	fields := logrus.Fields{
+	fields := Fields{
 		"deployment":         msg.GetDeployment,
 		"ip":                 msg.GetIp,
 		"job":                msg.GetJob,
@@ -241,14 +245,14 @@ func (e *Event) AnnotateWithEnveloppeData(msg *events.Envelope) {
 
 func (e *Event) CopyEvent() *Event {
 	fields := make(map[string]interface{})
-	
+
 	for k, v := range e.Fields {
 		fields[k] = v
 	}
 
 	return &Event{
 		Fields: fields,
-		Msg:  	e.Msg,
-		Type: 	e.Type,
+		Msg:    e.Msg,
+		Type:   e.Type,
 	}
 }
