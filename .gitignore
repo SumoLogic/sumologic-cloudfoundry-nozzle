@@ -3,7 +3,6 @@ release/
 event.db
 tile-history.yml
 sumo-logic-nozzle.zip
-.github
 # Pycharm
 .idea
 =======
