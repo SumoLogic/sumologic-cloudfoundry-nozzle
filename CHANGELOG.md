@@ -3,6 +3,15 @@ title: Release Notes
 owner: Sumo Logic 
 ---
 
+## v1.0.6
+
+**Release Date:** April 18, 2024
+
+Features included in this release:
+
+* Added support for Tanzu Application Service 6.0 with Tanzu Operations Manager 3.0.x.
+* Upgrade Golang version v1.20 and it's dependencies 
+  
 ## v1.0.5
 
 **Release Date:** March 12, 2024
