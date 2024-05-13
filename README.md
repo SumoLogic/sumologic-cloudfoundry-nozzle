@@ -1,4 +1,4 @@
-# sumologic-cloudfoundry-nozzle
+# SumoLogic Nozzle for VMware Tanzu
 
 This Nozzle aggregates all the events from the _Firehose_ feature in Cloud Foundry towards Sumo Logic
 
@@ -49,7 +49,7 @@ There are 3 ways to run this Nozzle:
 
 1. Run as standalone app
 2. Run as a tile in Pivotal Cloud Foundry
-3. Push as an app in a Clod Foundry instance
+3. Push as an app in a Cloud Foundry instance
 
 ### Run as standalone app
 
