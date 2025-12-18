@@ -1,12 +1,13 @@
 applications:
 - name: sumologic-cloudfoundry-nozzle
+  stack: cflinuxfs4
   health-check-type: none
   no-route: true
   buildpacks:
     - go_buildpack
   env:
     API_ENDPOINT: ''
-    GOVERSION: go1.13
+    GOVERSION: go1.24
     SUMO_ENDPOINTS: '[
         {
           "endpoint": "https://localhost1",

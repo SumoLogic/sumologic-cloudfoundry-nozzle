@@ -3,6 +3,15 @@ title: Release Notes
 owner: Sumo Logic 
 ---
 
+## v1.0.7
+
+**Release Date:** December 12, 2025
+
+Features included in this release:
+
+* Upgraded Golang version to v1.24 and its dependencies to align with v10.2 GA requirements.
+* Updated Cloud Foundry stack to cflinuxfs4 for VMware Tanzu Application Service v10.2 GA compatibility.
+
 ## v1.0.6
 
 **Release Date:** April 18, 2024
