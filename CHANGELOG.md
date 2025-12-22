@@ -3,6 +3,14 @@ title: Release Notes
 owner: Sumo Logic 
 ---
 
+## v1.0.8
+
+**Release Date:** December 18, 2025
+
+Features included in this release:
+
+* Upgraded dependencies to address CVE issues.
+
 ## v1.0.7
 
 **Release Date:** December 12, 2025
