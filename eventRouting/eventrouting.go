@@ -40,10 +40,6 @@ func (e *EventRouting) RouteEvent(msg *events.Envelope) {
 	if e.selectedEvents[eventType.String()] {
 		var event *fevents.Event
 		switch eventType {
-		case events.Envelope_HttpStart:
-			event = fevents.HttpStart(msg)
-		case events.Envelope_HttpStop:
-			event = fevents.HttpStop(msg)
 		case events.Envelope_HttpStartStop:
 			event = fevents.HttpStartStop(msg)
 		case events.Envelope_LogMessage:

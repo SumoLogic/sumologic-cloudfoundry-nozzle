@@ -28,6 +28,6 @@ type Caching interface {
 }
 
 func IsNeeded(wantedEvents string) bool {
-	r := regexp.MustCompile("LogMessage|HttpStart|HttpStop|HttpStartStop|ContainerMetric")
+	r := regexp.MustCompile("LogMessage|HttpStartStop|ContainerMetric")
 	return r.MatchString(wantedEvents)
 }
