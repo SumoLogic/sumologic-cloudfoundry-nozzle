@@ -131,7 +131,7 @@ forms:
     type: string
     label: Comma separated list of events you would like (Default is "LogMessage")
     default: LogMessage
-    description: Valid options are Error,ContainerMetric,HttpStart,HttpStop,HttpStartStop,LogMessage,ValueMetric,CounterEvent
+    description: Valid options are Error,ContainerMetric,HttpStartStop,LogMessage,ValueMetric,CounterEvent
   - name: skip_ssl_validation
     type: boolean
     label: Skip SSL validation

@@ -17,52 +17,6 @@ type Event struct {
 // Fields type
 type Fields map[string]interface{}
 
-// HttpStart event type is retained for backward compatibility, despite being deprecated.
-func HttpStart(msg *events.Envelope) *Event {
-	httpStart := msg.GetHttpStart()
-
-	fields := Fields{
-		"cf_app_id":         utils.FormatUUID(httpStart.GetApplicationId()),
-		"instance_id":       httpStart.GetInstanceId(),
-		"instance_index":    httpStart.GetInstanceIndex(),
-		"method":            httpStart.GetMethod().String(),
-		"origin":            msg.GetOrigin,
-		"parent_request_id": utils.FormatUUID(httpStart.GetParentRequestId()),
-		"peer_type":         httpStart.GetPeerType().String(),
-		"request_id":        utils.FormatUUID(httpStart.GetRequestId()),
-		"remote_addr":       httpStart.GetRemoteAddress(),
-		"timestamp":         httpStart.GetTimestamp(),
-		"uri":               httpStart.GetUri(),
-		"user_agent":        httpStart.GetUserAgent(),
-	}
-
-	return &Event{
-		Fields: fields,
-		Msg:    "",
-	}
-}
-
-// HttpStop event type is retained for backward compatibility, despite being deprecated.
-func HttpStop(msg *events.Envelope) *Event {
-	httpStop := msg.GetHttpStop()
-
-	fields := Fields{
-		"cf_app_id":      utils.FormatUUID(httpStop.GetApplicationId()),
-		"content_length": httpStop.GetContentLength(),
-		"origin":         msg.GetOrigin,
-		"peer_type":      httpStop.GetPeerType().String(),
-		"request_id":     utils.FormatUUID(httpStop.GetRequestId()),
-		"status_code":    httpStop.GetStatusCode(),
-		"timestamp":      httpStop.GetTimestamp(),
-		"uri":            httpStop.GetUri(),
-	}
-
-	return &Event{
-		Fields: fields,
-		Msg:    "",
-	}
-}
-
 func HttpStartStop(msg *events.Envelope) *Event {
 	httpStartStop := msg.GetHttpStartStop()
 

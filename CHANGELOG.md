@@ -3,6 +3,16 @@ title: Release Notes
 owner: Sumo Logic 
 ---
 
+## v1.0.9
+
+**Release Date:** June 17, 2026
+
+Features included in this release:
+
+* Upgraded Golang version to v1.26.4 and its dependencies to address 7 CVEs in golang.org/x/net.
+* Updated deprecated HttpStart/HttpStop event types.
+* Compatible with VMware Tanzu Application Service 10.4.0 Small Footprint Elastic Application Runtime.
+
 ## v1.0.8
 
 **Release Date:** December 18, 2025

@@ -1,8 +1,6 @@
 module github.com/SumoLogic/sumologic-cloudfoundry-nozzle
 
-go 1.24.0
-
-toolchain go1.24.10
+go 1.26.4
 
 require (
 	github.com/alecthomas/kingpin/v2 v2.4.0
@@ -12,7 +10,7 @@ require (
 	github.com/cloudfoundry/sonde-go v0.0.0-20160804000546-81c3f6be579c
 	github.com/gogo/protobuf v1.3.2
 	github.com/gorilla/websocket v1.5.3
-	github.com/mailru/easyjson v0.9.1
+	github.com/mailru/easyjson v0.9.2
 	github.com/onsi/ginkgo v1.6.0
 	github.com/onsi/gomega v1.4.1
 	github.com/stretchr/testify v1.10.0
@@ -33,10 +31,10 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/xhit/go-str2duration/v2 v2.1.0 // indirect
-	golang.org/x/net v0.48.0 // indirect
-	golang.org/x/oauth2 v0.34.0 // indirect
-	golang.org/x/sys v0.39.0 // indirect
-	golang.org/x/text v0.32.0 // indirect
+	golang.org/x/net v0.55.0 // indirect
+	golang.org/x/oauth2 v0.36.0 // indirect
+	golang.org/x/sys v0.46.0 // indirect
+	golang.org/x/text v0.37.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/fsnotify.v1 v1.4.7 // indirect

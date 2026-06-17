@@ -7,7 +7,7 @@ applications:
     - go_buildpack
   env:
     API_ENDPOINT: ''
-    GOVERSION: go1.24
+    GOVERSION: go1.26
     SUMO_ENDPOINTS: '[
         {
           "endpoint": "https://localhost1",

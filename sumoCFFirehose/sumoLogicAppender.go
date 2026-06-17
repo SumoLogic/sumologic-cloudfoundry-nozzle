@@ -198,18 +198,6 @@ func StringBuilder(event *events.Event, verboseLogMessages bool, includeOnlyMatc
 	eventType := event.Type
 	var msg []byte
 	switch eventType {
-	case "HttpStart":
-		FormatTimestamp(event, "timestamp")
-		message, err := json.Marshal(event)
-		if err == nil {
-			msg = message
-		}
-	case "HttpStop":
-		FormatTimestamp(event, "timestamp")
-		message, err := json.Marshal(event)
-		if err == nil {
-			msg = message
-		}
 	case "HttpStartStop":
 		FormatTimestamp(event, "start_timestamp")
 		FormatTimestamp(event, "stop_timestamp")

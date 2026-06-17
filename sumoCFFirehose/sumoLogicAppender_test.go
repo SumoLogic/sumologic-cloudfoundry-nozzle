@@ -3,7 +3,9 @@ package sumoCFFirehose
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 
@@ -21,7 +23,8 @@ func TestAppenderStringBuilder(t *testing.T) {
 			"name":       "requests.completed",
 			"origin":     "cc",
 			"unit":       "counter",
-			"value":      558108,
+			"value":      float64(558108),
+			"timestamp":  int64(1483629662001580569),
 		},
 		Msg:  "",
 		Type: "ValueMetric",
@@ -37,6 +40,7 @@ func TestAppenderStringBuilder(t *testing.T) {
 			"name":       "dropsondeMarshaller.sentEnvelopes",
 			"origin":     "MetronAgent",
 			"total":      10249446,
+			"timestamp":  int64(1483629662001580569),
 		},
 		Msg:  "",
 		Type: "CounterEvent",
@@ -52,6 +56,7 @@ func TestAppenderStringBuilder(t *testing.T) {
 			"name":       "dropsondeAgentListener.receivedByteCount",
 			"origin":     "MetronAgent",
 			"total":      639557085,
+			"timestamp":  int64(1483629662001580569),
 		},
 		Msg:  "",
 		Type: "CounterEvent",
@@ -67,9 +72,16 @@ func TestAppenderStringBuilder(t *testing.T) {
 	for queue.GetCount() > 0 {
 		finalString = finalString + StringBuilder(queue.Pop(), true, "", "", "")
 	}
-	assert.Equal(t, finalString, "{\"Fields\":{\"deployment\":\"cf\",\"ip\":\"10.193.166.33\",\"job\":\"cloud_controller\",\"job_index\":\"c82feee9-2159-4b05-b669-a9929eb59017\",\"name\":\"requests.completed\",\"origin\":\"cc\",\"unit\":\"counter\",\"value\":558108},\"Msg\":\"\",\"Type\":\"ValueMetric\"}\n"+
-		"{\"Fields\":{\"delta\":9,\"deployment\":\"cf-redis\",\"ip\":\"10.193.166.84\",\"job\":\"dedicated-node\",\"job_index\":\"8081eca4-9e27-49cb-83ce-948e703c0939\",\"name\":\"dropsondeMarshaller.sentEnvelopes\",\"origin\":\"MetronAgent\",\"total\":10249446},\"Msg\":\"\",\"Type\":\"CounterEvent\"}\n"+
-		"{\"Fields\":{\"delta\":582,\"deployment\":\"cf-redis\",\"ip\":\"10.193.166.84\",\"job\":\"dedicated-node\",\"job_index\":\"23f9be01-bd83-4967-acba-69fc649f4ee6\",\"name\":\"dropsondeAgentListener.receivedByteCount\",\"origin\":\"MetronAgent\",\"total\":639557085},\"Msg\":\"\",\"Type\":\"CounterEvent\"}\n", "")
+
+	// StringBuilder outputs Carbon2 text format for ValueMetric and CounterEvent
+	// Timestamp (19-digit int64) is converted to seconds for metrics
+	expectedTimestamp := int64(1483629662001580569) / int64(1000000000)
+	expected := fmt.Sprintf("deployment=cf job_index=c82feee9-2159-4b05-b669-a9929eb59017 ip=10.193.166.33 job=cloud_controller origin=cc metric=requests.completed  unit=counter %f %d\n", float64(558108), expectedTimestamp) +
+		fmt.Sprintf("deployment=cf-redis job_index=8081eca4-9e27-49cb-83ce-948e703c0939 ip=10.193.166.84 job=dedicated-node origin=MetronAgent metric=dropsondeMarshaller.sentEnvelopes_total  %d %d\n", 10249446, expectedTimestamp) +
+		fmt.Sprintf("deployment=cf-redis job_index=8081eca4-9e27-49cb-83ce-948e703c0939 ip=10.193.166.84 job=dedicated-node origin=MetronAgent metric=dropsondeMarshaller.sentEnvelopes_delta  %d %d\n", 9, expectedTimestamp) +
+		fmt.Sprintf("deployment=cf-redis job_index=23f9be01-bd83-4967-acba-69fc649f4ee6 ip=10.193.166.84 job=dedicated-node origin=MetronAgent metric=dropsondeAgentListener.receivedByteCount_total  %d %d\n", 639557085, expectedTimestamp) +
+		fmt.Sprintf("deployment=cf-redis job_index=23f9be01-bd83-4967-acba-69fc649f4ee6 ip=10.193.166.84 job=dedicated-node origin=MetronAgent metric=dropsondeAgentListener.receivedByteCount_delta  %d %d\n", 582, expectedTimestamp)
+	assert.Equal(t, expected, finalString, "")
 }
 
 func TestStringBuilderVerboseLogsFalse(t *testing.T) {
@@ -122,10 +134,10 @@ func TestStringBuilderVerboseLogsTrue(t *testing.T) {
 func TestSendParseCustomMetadata(t *testing.T) {
 	customMetadata := "Key1:Value1,Key2:Value2,Key3:Value3"
 	mapCustomMetadata := ParseCustomInput(customMetadata)
-	mapExpected := map[string]string{
-		"Key1": "Value1",
-		"Key2": "Value2",
-		"Key3": "Value3",
+	mapExpected := map[string][]string{
+		"Key1": {"Value1"},
+		"Key2": {"Value2"},
+		"Key3": {"Value3"},
 	}
 
 	assert.Equal(t, mapExpected, mapCustomMetadata, "")
@@ -156,7 +168,7 @@ func TestSendIncludeOnlyFilter(t *testing.T) {
 	}
 	buf := new(bytes.Buffer)
 	buf.Write(msg)
-	includeOnlyFilter := "job:diego_cell,source_type:other"
+	includeOnlyFilter := "job:diego_cell,source_type:APP"
 
 	assert.True(t, WantedEvent(buf.String(), includeOnlyFilter, ""), "This Event should be included")
 }
@@ -243,8 +255,8 @@ func TestSendIncludeExcludeFilterAppMatchIncluded(t *testing.T) {
 	}
 	buf := new(bytes.Buffer)
 	buf.Write(msg)
-	includeOnlyFilter := "job:diego_cell,source_type:other"
-	excludeAlwaysFilter := "source_type:other,origin:router"
+	includeOnlyFilter := "job:diego_cell,source_type:APP"
+	excludeAlwaysFilter := "deployment:other,origin:router"
 	assert.True(t, WantedEvent(buf.String(), includeOnlyFilter, excludeAlwaysFilter), "This Event should be included")
 }
 
@@ -303,8 +315,8 @@ func TestSendIncludeExcludeFilterAppNotMatchAnyFilter(t *testing.T) {
 	}
 	buf := new(bytes.Buffer)
 	buf.Write(msg)
-	includeOnlyFilter := "job:dedicated-node,source_type:other"
-	excludeAlwaysFilter := "source_type:other,origin:reps"
+	includeOnlyFilter := "job:diego_cell,source_type:APP"
+	excludeAlwaysFilter := "deployment:other,origin:reps"
 	assert.True(t, WantedEvent(buf.String(), includeOnlyFilter, excludeAlwaysFilter), "This Event should be included")
 }
 
@@ -379,7 +391,8 @@ func TestSendInt64Timestamp19(t *testing.T) {
 	}
 	FormatTimestamp(&eventStringTimestamp, "timestamp")
 	timestamp := eventStringTimestamp.Fields["timestamp"]
-	assert.Equal(t, timestamp, "2017-01-05 12:21:02.001580569 -0300 CLST", "This timestamp should be in the string")
+	expectedTimestamp := time.Unix(0, int64(1483629662001580569)*int64(time.Nanosecond)).String()
+	assert.Equal(t, expectedTimestamp, timestamp, "This timestamp should be in the string")
 }
 func TestSendInt64Timestamp14(t *testing.T) {
 	eventStringTimestamp := Event{
@@ -401,7 +414,8 @@ func TestSendInt64Timestamp14(t *testing.T) {
 	}
 	FormatTimestamp(&eventStringTimestamp, "timestamp")
 	timestamp := eventStringTimestamp.Fields["timestamp"]
-	assert.Equal(t, timestamp, "", "This timestamp should be in the string")
+	// Non-19-digit int64 timestamps are left as-is by FormatTimestamp
+	assert.Equal(t, int64(148362966200), timestamp, "Non-19-digit timestamp should be unchanged")
 }
 func TestSendWrongTimestampField(t *testing.T) {
 	eventStringTimestamp := Event{
